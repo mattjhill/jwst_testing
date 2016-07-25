@@ -8,14 +8,14 @@ __docformat__ = 'reStructuredText'
 from astropy.io import fits
 import numpy as np
 import unittest
-import sys
 import pytest
+
 dq_init = pytest.mark.dq_init
 
 @dq_init
-class Test_dq_init:
+class TestDQInitStep:
     """
-    The base class for testing the dq_init step.
+    The base class for testing the DQInitStep.
     """
 
     @pytest.fixture
