@@ -3,32 +3,29 @@ from PIL import Image
 import glob
 from astropy.io import fits
 import pytest
+import argparse
 
-def get_file_names(arguments):
+def get_file_names(args):
     """
     Takes arguments from the command line in order of <input> <expected output>
     and returns the names of both files; to be called by the testing suite file
     """
-    if (len(arguments) == 1):
-        #raw_input should be input in Python 3
-        input_file = input("Enter the name of the input file: ")
-        expected_output_file = input("Enter the name of the expected output file: ")
-        print ("Running tests now...")
-        return (input_file, expected_output_file)
-    elif (len(arguments) == 3):
-        input_file = arguments[1]
-        expected_output_file = arguments[2]
-        print ("Running tests now...")
-        return (input_file, expected_output_file)
-    else:
-        print ("Please have the command line arguments organized as:\n"
-        + "\tpython JWST_pipeline_test <input_file> <expected_output_file>")
+    input_file = args.input_file
+    expected_output_file = args.expected_output_file
+    print ("Running tests now...")
+    return (input_file, expected_output_file)
 
 def start_tests():
-    pytest.main()
+    pytest.main(['-v'])
 
+parser = argparse.ArgumentParser()
+parser.add_argument("input_file", help="the file to be put through pipeline testing")
+parser.add_argument("expected_output_file", help="once the input file goes through the pipeline, it will be compared to this file for validation")
+parser.add_argument("-v", "--verbosity", action="count", default=0)
 
-(input_file, expected_output_file) = get_file_names(sys.argv)
+args = parser.parse_args()
+print (args.verbosity)
+(input_file, expected_output_file) = get_file_names(args)
 start_tests()
 #start_tests(input_file, expected_output_file)
 print (input_file, expected_output_file)
