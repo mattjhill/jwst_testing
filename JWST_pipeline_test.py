@@ -15,8 +15,8 @@ def get_file_names(args):
     print ("Running tests now...")
     return (input_file, expected_output_file)
 
-def start_tests():
-    pytest.main(['-v'])
+def start_tests(input_file):
+    pytest.main(['-v', '--fname='+input_file])
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_file", help="the file to be put through pipeline testing")
@@ -26,6 +26,6 @@ parser.add_argument("-v", "--verbosity", action="count", default=0)
 args = parser.parse_args()
 print (args.verbosity)
 (input_file, expected_output_file) = get_file_names(args)
-start_tests()
+start_tests(input_file)
 #start_tests(input_file, expected_output_file)
 print (input_file, expected_output_file)
