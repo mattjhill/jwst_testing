@@ -29,7 +29,6 @@ def get_config_file_names(config):
         '--refpix='+refpix_file, '--lastframe='+lastframe_file,
         '--linearity_file='+linearity_file, '--dark_current_file='+ dark_current_file,
         '--jump_file='+jump_file, '--ramp_fit_file='+ramp_fit_file])
-    print (dq_init_file)
 
 # def check_if_input_fits(args):
 #     """
