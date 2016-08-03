@@ -134,9 +134,9 @@ def ramp_fit_hdu(request):
 
 def pytest_runtest_setup(item):
 
-    if 'dq_init' in item.keywords and item.config.getvalue("--dq_init_file") is None:
+    if 'dq_init' in item.keywords and item.config.getvalue("--dq_init_file") == 'None':
         pytest.skip("requires a dq_init_file")
-    if 'saturation' in item.keywords and item.config.getvalue("--sat_file") is None:
+    if 'saturation' in item.keywords and item.config.getvalue("--sat_file") == 'None':
         pytest.skip("requires a sat_file")
     if 'ipc' in item.keywords and item.config.getvalue("--ipc_file") is None:
         pytest.skip("requires a ipc_file")
