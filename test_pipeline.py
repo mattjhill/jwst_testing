@@ -146,7 +146,7 @@ class TestSaturationStep:
         # TODO
         assert False
 
-    @pytest.mark.needs_dq_init
+    @pytest.mark.dq_init
     def test_saturation_pixeldq_propagation(self, sat_hdu, refhdu, dq_init_hdu):
         """
         check that proper Data Quality flags are added according to reference

@@ -15,11 +15,11 @@ def pytest_addoption(parser):
     --skip_dq_init  -  skips the test associated with the dq_init step
     --fname - the path to the file to perform the test on
     """
-    parser.addoption("--skip_dq_init", action="store_true", 
-        help="skip the dq_init step tests")
+    # parser.addoption("--skip_dq_init", action="store_true", 
+    #     help="skip the dq_init step tests")
     parser.addoption("--dq_init_file", action="store", default=None,
         help="dq_init_file: output of dq_init step to be validated")
-    parser.addoption("--sat_file", action="store", 
+    parser.addoption("--sat_file", action="store", default=None,
         help="sat_file: output of saturation step to be validated")
 
 @pytest.fixture
