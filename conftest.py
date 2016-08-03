@@ -3,6 +3,7 @@ Configuration file for py.test
 """
 
 import pytest
+from astropy.io import fits
 
 def pytest_addoption(parser):
     """
@@ -16,18 +17,32 @@ def pytest_addoption(parser):
     """
     parser.addoption("--skip_dq_init", action="store_true", 
         help="skip the dq_init step tests")
-    parser.addoption("--fname", action="store", 
-        help="fname: input fits file to be validated")
+    parser.addoption("--dq_init_file", action="store", default=None,
+        help="dq_init_file: output of dq_init step to be validated")
+    parser.addoption("--sat_file", action="store", 
+        help="sat_file: output of saturation step to be validated")
+
+@pytest.fixture
+def dq_init_hdu(request):
+        """
+        Takes the --dqint_file cmd line arg and opens the fits file
+        this allows hdulist to be accessible by all test in the class.
+        """
+        dq_init_file = request.config.getoption("--dq_init_file")
+        return fits.open(dq_init_file)
 
 @pytest.fixture()
-def fname(request):
+def sat_hdu(request):
     """
     fixture to get the path input with --fname. The input string is now
     available as fname in the the test module
     """
-    return request.config.getoption("--fname")
+    sat_file = request.config.getoption("--sat_file")
+    return fits.open(sat_file)
 
 def pytest_runtest_setup(item):
     
-    if 'dq_init' in item.keywords and item.config.getvalue("--skip_dq_init"):
+    if 'dq_init' in item.keywords and item.config.getvalue("--dq_init_file") is None:
+        pytest.skip("skipping dq_init tests")
+    if 'saturation' in item.keywords and item.config.getvalue("--sat_file") is None:
         pytest.skip("skipping dq_init tests")

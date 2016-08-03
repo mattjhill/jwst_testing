@@ -37,7 +37,7 @@ def start_tests(input_file):
     Calls pytest in order to begin testing the validity of the pipeline using
     the input_file and expected_output_file
     """
-    pytest.main(['-v', '--fname='+input_file])
+    pytest.main(['-v', '--dq_init_file='+input_file])
 
 parser = argparse.ArgumentParser()
 args = setup_parser(parser)
