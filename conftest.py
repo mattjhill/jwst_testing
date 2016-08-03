@@ -138,21 +138,21 @@ def pytest_runtest_setup(item):
         pytest.skip("requires a dq_init_file")
     if 'saturation' in item.keywords and item.config.getvalue("--sat_file") == 'None':
         pytest.skip("requires a sat_file")
-    if 'ipc' in item.keywords and item.config.getvalue("--ipc_file") is None:
+    if 'ipc' in item.keywords and item.config.getvalue("--ipc_file") == 'None':
         pytest.skip("requires a ipc_file")
-    if 'superbias' in item.keywords and item.config.getvalue("--superbias_file") is None:
+    if 'superbias' in item.keywords and item.config.getvalue("--superbias_file") == 'None':
         pytest.skip("requires a superbias_file")
-    if 'refix' in item.keywords and item.config.getvalue("--refpix_file") is None:
+    if 'refix' in item.keywords and item.config.getvalue("--refpix_file") == 'None':
         pytest.skip("requires a refpix_file")
-    if 'reset' in item.keywords and item.config.getvalue("--reset_file") is None:
+    if 'reset' in item.keywords and item.config.getvalue("--reset_file") == 'None':
         pytest.skip("requires a reset_file")
-    if 'lastframe' in item.keywords and item.config.getvalue("--lastframe_file") is None:
+    if 'lastframe' in item.keywords and item.config.getvalue("--lastframe_file") == 'None':
         pytest.skip("requires a lastframe_file")
-    if 'linearity' in item.keywords and item.config.getvalue("--linearity_file") is None:
+    if 'linearity' in item.keywords and item.config.getvalue("--linearity_file") == 'None':
         pytest.skip("requires a linearity_file")
-    if 'dark_current' in item.keywords and item.config.getvalue("--dark_current_file") is None:
+    if 'dark_current' in item.keywords and item.config.getvalue("--dark_current_file") == 'None':
         pytest.skip("requires a dark_current_file")
-    if 'jump' in item.keywords and item.config.getvalue("--jump_file") is None:
+    if 'jump' in item.keywords and item.config.getvalue("--jump_file") == 'None':
         pytest.skip("requires a jump_file")
-    if 'ramp_fit' in item.keywords and item.config.getvalue("--ramp_fit_file") is None:
+    if 'ramp_fit' in item.keywords and item.config.getvalue("--ramp_fit_file") == 'None':
         pytest.skip("requires a ramp_fit_file")
