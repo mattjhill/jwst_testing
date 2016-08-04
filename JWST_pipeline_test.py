@@ -12,13 +12,6 @@ def get_config_file_names(config):
     Reads file names for each step from set_values.cfg and runs them through
     pytest if its value is not None
     """
-<<<<<<< HEAD
-    parser.add_argument("input_file", help="the file to be put through pipeline testing")
-    parser.add_argument("expected_output_file", help="once the input file goes through the pipeline, it will be compared to this file for validation")
-    parser.add_argument("-v", "--verbosity", action="count", default=0)
-    parser.add_argument("--dq_init_file", action="store", help="output of the dq_init step of the pipeline", default=None)
-    parser.add_argument("--sat_file", action="store", help="output of the saturation step of the pipeline", default=None)
-=======
     config.read("set_values.cfg")
     dq_init_file = config.get("dq_init","dq_init_file")
     sat_file = config.get("saturation","sat_file")
@@ -36,7 +29,6 @@ def get_config_file_names(config):
         '--refpix='+refpix_file, '--lastframe='+lastframe_file,
         '--linearity_file='+linearity_file, '--dark_current_file='+ dark_current_file,
         '--jump_file='+jump_file, '--ramp_fit_file='+ramp_fit_file])
->>>>>>> master
 
 # def check_if_input_fits(args):
 #     """
@@ -51,37 +43,6 @@ def get_config_file_names(config):
 #         print("ERROR, {} not a FITS file".format(args.input_file))
 #     return False
 
-<<<<<<< HEAD
-def get_file_names(args):
-    """
-    Takes arguments from the command line in order of <input> <expected output>
-    and returns the names of both files; to be called by the testing suite file
-    """
-    input_file = args.input_file
-    expected_output_file = args.expected_output_file
-    print ("Running tests now...")
-    return (input_file, expected_output_file)
-
-def start_tests(args):
-    """
-    Calls pytest in order to begin testing the validity of the pipeline using
-    the input_file and expected_output_file
-    """
-    pytest_args = ['-v']
-    if args.dq_init_file:
-        pytest_args.append('--dq_init_file='+args.dq_init_file)
-    if args.sat_file:
-        pytest_args.append('--sat_file='+args.sat_file)
-
-    pytest_args.append('test_pipeline.py')
-    pytest.main(pytest_args)
-
-parser = argparse.ArgumentParser()
-args = setup_parser(parser)
-# (input_file, expected_output_file) = get_file_names(args)
-start_tests(args)
-# print (input_file, expected_output_file)
-=======
 
 config = ConfigParser.ConfigParser()
 get_config_file_names(config)
@@ -92,4 +53,3 @@ get_config_file_names(config)
 #         .format(input_file, expected_output_file,instrument_team))
 # else:
 #     print ("Input file {} is not in the correct FITS format".format(input_file))
->>>>>>> master
