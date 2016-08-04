@@ -63,26 +63,6 @@ def ipc_hdu(request):
 @pytest.fixture()
 def superbias_hdu(request):
     """
-<<<<<<< HEAD
-    # parser.addoption("--skip_dq_init", action="store_true", 
-    #     help="skip the dq_init step tests")
-    parser.addoption("--dq_init_file", action="store", default=None,
-        help="dq_init_file: output of dq_init step to be validated")
-    parser.addoption("--sat_file", action="store", default=None,
-        help="sat_file: output of saturation step to be validated")
-
-@pytest.fixture
-def dq_init_hdu(request):
-        """
-        Takes the --dqint_file cmd line arg and opens the fits file
-        this allows hdulist to be accessible by all test in the class.
-        """
-        dq_init_file = request.config.getoption("--dq_init_file")
-        return fits.open(dq_init_file)
-
-@pytest.fixture()
-def sat_hdu(request):
-=======
     Takes the --superbias_file cmd line arg and opens the fits file
     this allows hdulist to be accessible by all test in the class.
     """
@@ -100,22 +80,10 @@ def refpix_hdu(request):
 
 @pytest.fixture()
 def reset_hdu(request):
->>>>>>> master
     """
     Takes the --reset_file cmd line arg and opens the fits file
     this allows hdulist to be accessible by all test in the class.
     """
-<<<<<<< HEAD
-    sat_file = request.config.getoption("--sat_file")
-    return fits.open(sat_file)
-
-def pytest_runtest_setup(item):
-    
-    if 'dq_init' in item.keywords and item.config.getvalue("--dq_init_file") is None:
-        pytest.skip("requires a dq_init_file")
-    if 'saturation' in item.keywords and item.config.getvalue("--sat_file") is None:
-        pytest.skip("requires a sat_file")
-=======
     reset_file = request.config.getoption("--reset_file")
     return fits.open(reset_file)
 
@@ -188,4 +156,3 @@ def pytest_runtest_setup(item):
         pytest.skip("requires a jump_file")
     if 'ramp_fit' in item.keywords and item.config.getvalue("--ramp_fit_file") == 'None':
         pytest.skip("requires a ramp_fit_file")
->>>>>>> master
