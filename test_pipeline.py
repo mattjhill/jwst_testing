@@ -144,7 +144,11 @@ class TestSaturationStep:
         Check that saturated pixels are flagged properly
         """
         # TODO
-        assert False
+        flag = np.logical_and(sat_hdu['SCI'].data > refhdu['SCI'].data, 
+            refhdu['DQ'].data != 2)
+        expected_groupdq = np.zeros_like(sat_hdu['GROUPDQ'].data)
+        expected_groupdq[flag] = 2
+        assert np.all(sat_hdu['GROUPDQ'].data == expected_groupdq)
 
     @pytest.mark.dq_init
     def test_saturation_pixeldq_propagation(self, sat_hdu, refhdu, dq_init_hdu):
