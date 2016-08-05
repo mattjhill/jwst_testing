@@ -144,8 +144,11 @@ class TestSaturationStep:
         Check that saturated pixels are flagged properly
         """
         # TODO
-        flag = np.logical_and(sat_hdu['SCI'].data > refhdu['SCI'].data, 
-            refhdu['DQ'].data != 2)
+        if 'DQ' in refhdu:
+            flag = np.logical_and(sat_hdu['SCI'].data > refhdu['SCI'].data, 
+                refhdu['DQ'].data != 2)
+        else: 
+            flag = sat_hdu['SCI'].data > refhdu['SCI'].data
         expected_groupdq = np.zeros_like(sat_hdu['GROUPDQ'].data)
         expected_groupdq[flag] = 2
         assert np.all(sat_hdu['GROUPDQ'].data == expected_groupdq)
@@ -156,5 +159,78 @@ class TestSaturationStep:
         check that proper Data Quality flags are added according to reference
         file.
         """
-        bad = np.where(refhdu['DQ'].data == 2)
-        assert np.all(dq_init_hdu['PIXELDQ'].data[bad] + 2097152 == sat_hdu['PIXELDQ'].data[bad])
+        no_sat_check = np.where(refhdu['DQ'].data == 2)
+        pixeldq_change = np.zeros_like(sat_hdu['PIXELDQ'].data)
+        pixeldq_change[no_sat_check] = 2097152
+        assert np.all(dq_init_hdu['PIXELDQ'].data + pixeldq_change == sat_hdu['PIXELDQ'].data)
+
+@pytest.mark.ipc
+class TestIPCStep:
+    """
+    The base class for testing the IPCStep.
+    """
+
+    @pytest.fixture
+    def refhdu(self, ipc_hdu):
+        CRDS = '/grp/crds/cache/references/jwst/'
+        ref_file = CRDS+sat_hdu[0].header['R_IPC'][7:]
+        return fits.open(ref_file)
+
+@pytest.mark.superbias
+class TestSuperbiasStep:
+    """
+    The base class for testing the SuperbiasStep
+    """
+
+    @pytest.fixture
+    def refhdu(self, superbias_hdu):
+        CRDS = '/grp/crds/cache/references/jwst/'
+        ref_file = CRDS+superbias_hdu[0].header['R_SUPERB'][7:]
+        return fits.open(ref_file)
+
+    @pytest.mark.saturation
+    def test_superbias_pixeldq_propagation(self, superbias_hdu, refhdu, sat_hdu):
+        """
+        check that proper Data Quality flags are added according to reference
+        file.
+        """
+        unrealiable_bias = np.where(refhdu['DQ'].data == 2)
+        pixeldq_change = np.zeros_like(superbias_hdu['PIXELDQ'].data)
+        pixeldq_change[unrealiable_bias] = 4194304
+        assert np.all(sat_hdu['PIXELDQ'].data + pixeldq_change == superbias_hdu['PIXELDQ'].data)
+
+# @pytest.mark.refpix
+# class TestRefpixStep:
+#     """
+#     The base class for testing the RefpixStep
+#     """
+#     @pytest.fixture
+#     def refhdu(self, refpix_hdu):
+#         if 'R_REFPIX' in refpix_hdu[0].header:
+#             CRDS = '/grp/crds/cache/references/jwst/'
+#             ref_file = CRDS+superbias_hdu[0].header['R_SUPERB'][7:]
+#             return fits.open(ref_file)
+
+@pytest.mark.linearity
+class TestLinearityStep:
+    """
+    The base class for testing the LinearityStep
+    """
+
+    @pytest.fixture
+    def refhdu(self, linearity_hdu):
+        CRDS = '/grp/crds/cache/references/jwst/'
+        ref_file = CRDS+linearity_hdu[0].header['R_LINEAR'][7:]
+        return fits.open(ref_file)
+
+    def test_linearity_pixeldq_propagation(self, linearity_hdu, refhdu, lastframe_hdu):
+        """
+        check that proper Data Quality flags are added according to reference
+        file.
+        """
+        nonlinear = np.where(refhdu['DQ'].data == 2)
+        no_lin_corr = np.where(refhdu['DQ'].data == 4)
+        pixeldq_change = np.zeros_like(linearity_hdu['PIXELDQ'].data)
+        pixeldq_change[nonlinear] = 65536
+        pixeldq_change[no_lin_corr] = 1048576
+        assert np.all(lastframe_hdu['PIXELDQ'].data + pixeldq_change == linearity_hdu['PIXELDQ'].data)
