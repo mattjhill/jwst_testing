@@ -36,7 +36,7 @@ class TestDQInitStep:
         good = np.where(refhdu['DQ'].data == 0)
         assert np.all(pixeldq[good] == 0)
 
-    def test_dead_pixeldq_dead_propagtion(self, dq_init_hdu, refhdu):
+    def test_dead_pixeldq_propagtion(self, dq_init_hdu, refhdu):
         """
         make sure that the values in the reference mask are properly
         translated to values in PIXELDQ
