@@ -234,3 +234,26 @@ class TestLinearityStep:
         pixeldq_change[nonlinear] = 65536
         pixeldq_change[no_lin_corr] = 1048576
         assert np.all(lastframe_hdu['PIXELDQ'].data + pixeldq_change == linearity_hdu['PIXELDQ'].data)
+
+@pytest.mark.dark_current
+class TestDarkCurrentStep:
+    """
+    The base class for testing the DarkCurrentStep
+    """
+
+    @pytest.fixture
+    def refhdu(self, dark_current_hdu):
+        CRDS = '/grp/crds/cache/references/jwst/'
+        ref_file = CRDS+dark_current_hdu[0].header['R_DARK'][7:]
+        return fits.open(ref_file)
+
+    def test_dark_current_pixeldq_propagation(self, dark_current_hdu, refhdu, linearity_hdu):
+        """
+        check that proper Data quality flags are added according to the reference file.
+        """
+
+        # warm = np.where(refhdu['DQ'].data == 2)
+        # hot = np.where(refhdu['DQ'].data == 4)
+        # unreliable_dark = np.where(refhdu['DQ'] == 8)
+        # unreliable_slope = np.where
+
