@@ -223,6 +223,18 @@ class TestLinearityStep:
         ref_file = CRDS+linearity_hdu[0].header['R_LINEAR'][7:]
         return fits.open(ref_file)
 
+    def test_linearity_correction(self, linearity_hdu, refhdu, lastframe_hdu):
+        """
+        Check that the linearity correction is properly applied to all relevant pixels.
+        """
+
+        # ignore pixels which are saturated (GROUPDQ = 20 or NO_LIN_CORR (DQ = 2)
+        check = np.where(np.logical_and(lastframe_hdu['GROUPDQ'].data != 2, refhdu['DQ'].data != 2))
+
+        # make sure that the values linearity correction is properly applied to relevant pixels
+        assert np.allclose(np.polyval(refhdu['COEFFS'].data[::-1], lastframe_hdu['SCI'].data)[check], 
+            linearity_hdu['SCI'].data[check])
+
     def test_linearity_pixeldq_propagation(self, linearity_hdu, refhdu, lastframe_hdu):
         """
         check that proper Data Quality flags are added according to reference
