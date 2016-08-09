@@ -6,13 +6,14 @@ Pipeline validation
 import sys
 import pytest
 import ConfigParser
+import argparse
 
-def get_config_file_names(config):
+def get_config_file_names(config,args):
     """
     Reads file names for each step from set_values.cfg and runs them through
     pytest if its value is not None
     """
-    config.read("set_values.cfg")
+    config.read(args.chosen_config)
     dq_init_file = config.get("dq_init","dq_init_file")
     sat_file = config.get("saturation","sat_file")
     ipc_file = config.get("ipc","ipc_file")
@@ -43,9 +44,12 @@ def get_config_file_names(config):
 #         print("ERROR, {} not a FITS file".format(args.input_file))
 #     return False
 
+parser = argparse.ArgumentParser()
+parser.add_argument("chosen_config")
+args = parser.parse_args()
 
 config = ConfigParser.ConfigParser()
-get_config_file_names(config)
+get_config_file_names(config,args)
 # check_for_fits = check_if_input_fits(args)
 # if check_for_fits:
 #     start_tests(input_file, instrument_team)
