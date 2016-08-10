@@ -149,8 +149,14 @@ class TestSaturationStep:
                 refhdu['DQ'].data != 2)
         else: 
             flag = sat_hdu['SCI'].data > refhdu['SCI'].data
+
         expected_groupdq = np.zeros_like(sat_hdu['GROUPDQ'].data)
         expected_groupdq[flag] = 2
+        
+        #now make sure that pixels in groups after a flagged pixel are also flagged
+        flag = (np.cumsum(expected_groupdq == 2, axis=1) > 0)
+        expected_groupdq[flag] = 2 
+
         assert np.all(sat_hdu['GROUPDQ'].data == expected_groupdq)
 
     @pytest.mark.dq_init
@@ -228,12 +234,19 @@ class TestLinearityStep:
         Check that the linearity correction is properly applied to all relevant pixels.
         """
 
-        # ignore pixels which are saturated (GROUPDQ = 20 or NO_LIN_CORR (DQ = 2)
-        check = np.where(np.logical_and(lastframe_hdu['GROUPDQ'].data != 2, refhdu['DQ'].data != 2))
+        # ignore pixels which are saturated (GROUPDQ = 2) or NO_LIN_CORR (DQ = 2)
+        corrected = np.logical_and(lastframe_hdu['GROUPDQ'].data != 2, refhdu['DQ'].data != 2)
+        
+        linearity_applied = np.allclose(
+            np.polyval(refhdu['COEFFS'].data[::-1], lastframe_hdu['SCI'].data)[corrected], 
+            linearity_hdu['SCI'].data[corrected])
+
+        linearity_ignored = np.allclose(lastframe_hdu['SCI'].data[~corrected], 
+            linearity_hdu['SCI'].data[~corrected])
 
         # make sure that the values linearity correction is properly applied to relevant pixels
-        assert np.allclose(np.polyval(refhdu['COEFFS'].data[::-1], lastframe_hdu['SCI'].data)[check], 
-            linearity_hdu['SCI'].data[check])
+        # and ignored elsewhere
+        assert linearity_applied and linearity_ignored
 
     def test_linearity_pixeldq_propagation(self, linearity_hdu, refhdu, lastframe_hdu):
         """
@@ -243,8 +256,8 @@ class TestLinearityStep:
         nonlinear = np.where(refhdu['DQ'].data == 2)
         no_lin_corr = np.where(refhdu['DQ'].data == 4)
         pixeldq_change = np.zeros_like(linearity_hdu['PIXELDQ'].data)
-        pixeldq_change[nonlinear] = 65536
-        pixeldq_change[no_lin_corr] = 1048576
+        pixeldq_change[nonlinear] += 65536
+        pixeldq_change[no_lin_corr] += 1048576
         assert np.all(lastframe_hdu['PIXELDQ'].data + pixeldq_change == linearity_hdu['PIXELDQ'].data)
 
 @pytest.mark.dark_current
