@@ -145,7 +145,7 @@ class TestSaturationStep:
         """
         # TODO
         if 'DQ' in refhdu:
-            flag = np.logical_and(sat_hdu['SCI'].data > refhdu['SCI'].data, 
+            flag = np.logical_and(sat_hdu['SCI'].data >= refhdu['SCI'].data, 
                 refhdu['DQ'].data != 2)
         else: 
             flag = sat_hdu['SCI'].data > refhdu['SCI'].data
