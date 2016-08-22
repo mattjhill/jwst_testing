@@ -25,7 +25,8 @@ def get_config_file_names(config,args):
     dark_current_file = config.get("dark_current","dark_current_file")
     jump_file = config.get("jump","jump_file")
     ramp_fit_file = config.get("ramp_fit","ramp_fit_file")
-    pytest.main(['-v', 
+
+    pytest_args = ['-v', 
         '--dq_init_file='+dq_init_file, 
         '--sat_file='+sat_file,
         '--ipc_file='+ipc_file, 
@@ -36,7 +37,17 @@ def get_config_file_names(config,args):
         '--linearity_file='+linearity_file, 
         '--dark_current_file='+ dark_current_file,
         '--jump_file='+jump_file, 
-        '--ramp_fit_file='+ramp_fit_file])
+        '--ramp_fit_file='+ramp_fit_file]
+
+    # select specific tests if the option is set in the config file
+    try:
+        pytest_args.append('-k '+config.get("options","tests"))
+    except ConfigParser.NoSectionError:
+        pass
+
+    # make sure only test_pipeline.py is used
+    pytest_args.append('test_pipeline.py')  
+    pytest.main(pytest_args)
 
 # def check_if_input_fits(args):
 #     """
