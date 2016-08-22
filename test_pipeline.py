@@ -10,6 +10,55 @@ import numpy as np
 import unittest
 import pytest
 
+dq_dict = {
+'DO_NOT_USE' : 0,
+'SATURATED' : 1,
+'JUMP_DET' : 2,
+'DROPOUT' : 3,
+'RESERVED' : 4,     
+'RESERVED' : 5,     
+'RESERVED' : 6,     
+'RESERVED' : 7,     
+'UNRELIABLE_ERROR' : 8,
+'NON_SCIENCE' : 9,
+'DEAD' : 10,
+'HOT' : 11,
+'WARM' : 12,
+'LOW_QE' : 13,
+'RC' : 14,
+'TELEGRAPH' : 15,
+'NONLINEAR' : 16,
+'BAD_REF_PIXEL' : 17,
+'NO_FLAT_FIELD' : 18,
+'NO_GAIN_VALUE' : 19,
+'NO_LIN_CORR' : 20,
+'NO_SAT_CHECK' : 21,
+'UNRELIABLE_BIAS' : 22,
+'UNRELIABLE_DARK' : 23,
+'UNRELIABLE_SLOPE' : 24,
+'UNRELIABLE_FLAT' : 25,
+'OPEN' : 26,
+'ADJ_OPEN' : 27,
+'UNRELIABLE_RESET' : 28,
+'MSA_FAILED_OPEN' : 29,
+'OTHER_BAD_PIXEL' : 30,
+}
+
+def bitwise_propagate(refhdu, inhdu):
+    pixeldq = inhdu['PIXELDQ'].data
+    for row in refhdu['DQ_DEF'].data:
+        try:
+            print("{} {} {}".format(row['NAME'], row['BIT'], dq_dict[row['NAME']]))
+            # find which pixels have the bit set
+            flagged = (np.bitwise_and(1, np.right_shift(refhdu['DQ'].data, row['BIT']))).astype(np.uint32)
+            # shift them to the correct bit for PIXELDQ
+            flagged = np.left_shift(flagged, dq_dict[row['NAME']])
+            # propagate into the PIXELDQ extension
+            pixeldq = np.bitwise_or(pixeldq, flagged)
+        except KeyError:
+            print("No DQ mnemonic "+row['NAME'])
+    return pixeldq
+
 @pytest.mark.dq_init
 class TestDQInitStep:
     """
@@ -165,10 +214,7 @@ class TestSaturationStep:
         check that proper Data Quality flags are added according to reference
         file.
         """
-        no_sat_check = np.where(refhdu['DQ'].data == 2)
-        pixeldq_change = np.zeros_like(sat_hdu['PIXELDQ'].data)
-        pixeldq_change[no_sat_check] = 2097152
-        assert np.all(dq_init_hdu['PIXELDQ'].data + pixeldq_change == sat_hdu['PIXELDQ'].data)
+        assert np.all(bitwise_propagate(refhdu, dq_init_hdu) == sat_hdu['PIXELDQ'].data)
 
 @pytest.mark.ipc
 class TestIPCStep:
@@ -200,22 +246,36 @@ class TestSuperbiasStep:
         check that proper Data Quality flags are added according to reference
         file.
         """
-        unrealiable_bias = np.where(refhdu['DQ'].data == 2)
-        pixeldq_change = np.zeros_like(superbias_hdu['PIXELDQ'].data)
-        pixeldq_change[unrealiable_bias] = 4194304
-        assert np.all(sat_hdu['PIXELDQ'].data + pixeldq_change == superbias_hdu['PIXELDQ'].data)
+        assert np.all(bitwise_propagate(refhdu, sat_hdu) == superbias_hdu['PIXELDQ'].data)
 
-# @pytest.mark.refpix
-# class TestRefpixStep:
-#     """
-#     The base class for testing the RefpixStep
-#     """
-#     @pytest.fixture
-#     def refhdu(self, refpix_hdu):
-#         if 'R_REFPIX' in refpix_hdu[0].header:
-#             CRDS = '/grp/crds/cache/references/jwst/'
-#             ref_file = CRDS+superbias_hdu[0].header['R_SUPERB'][7:]
-#             return fits.open(ref_file)
+@pytest.mark.refpix
+class TestRefpixStep:
+    """
+    The base class for testing the RefpixStep
+    """
+    @pytest.fixture
+    def refhdu(self, refpix_hdu):
+        if 'R_REFPIX' in refpix_hdu[0].header:
+            CRDS = '/grp/crds/cache/references/jwst/'
+            ref_file = CRDS+superbias_hdu[0].header['R_REFPIX'][7:]
+            return fits.open(ref_file)
+
+@pytest.mark.reset
+class TestResetStep:
+    """
+    The base class for testing the ResetStep
+    """
+    @pytest.fixture
+    def refhdu(self, reset_hdu):
+        CRDS = '/grp/crds/cache/references/jwst/'
+        ref_file = CRDS+reset_hdu[0].header['R_RESET'][7:]
+        return fits.open(ref_file)
+
+    def test_reset_pixeldq_propagation(self, refpix_hdu, refhdu, reset_hdu):
+        assert np.all(bitwise_propagate(refhdu, refpix_hdu) == reset_hdu['PIXELDQ'].data)
+
+
+
 
 @pytest.mark.linearity
 class TestLinearityStep:
@@ -254,19 +314,16 @@ class TestLinearityStep:
         some threshold (0.25% ?)
         """
 
-        
-
+    @pytest.mark.lastframe
     def test_linearity_pixeldq_propagation(self, linearity_hdu, refhdu, lastframe_hdu):
         """
         check that proper Data Quality flags are added according to reference
         file.
         """
-        nonlinear = np.where(refhdu['DQ'].data == 2)
-        no_lin_corr = np.where(refhdu['DQ'].data == 4)
-        pixeldq_change = np.zeros_like(linearity_hdu['PIXELDQ'].data)
-        pixeldq_change[nonlinear] += 65536
-        pixeldq_change[no_lin_corr] += 1048576
-        assert np.all(lastframe_hdu['PIXELDQ'].data + pixeldq_change == linearity_hdu['PIXELDQ'].data)
+        try:
+            assert np.all(bitwise_propagate(refhdu, lastframe_hdu) == linearity_hdu['PIXELDQ'].data)
+        except KeyError:
+            assert np.all(refhdu['DQ'].data == 0)
 
 @pytest.mark.dark_current
 class TestDarkCurrentStep:
@@ -284,9 +341,5 @@ class TestDarkCurrentStep:
         """
         check that proper Data quality flags are added according to the reference file.
         """
-
-        # warm = np.where(refhdu['DQ'].data == 2)
-        # hot = np.where(refhdu['DQ'].data == 4)
-        # unreliable_dark = np.where(refhdu['DQ'] == 8)
-        # unreliable_slope = np.where
+        assert np.all(bitwise_propagate(refhdu, linearity_hdu) == dark_current_hdu['PIXELDQ'].data)
 
