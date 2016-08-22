@@ -248,6 +248,14 @@ class TestLinearityStep:
         # and ignored elsewhere
         assert linearity_applied and linearity_ignored
 
+    def test_linearity_residuals(self, linearity_hdu):
+        """
+        Check that after the linearity correction the ramps agree with a linear fit to within
+        some threshold (0.25% ?)
+        """
+
+        
+
     def test_linearity_pixeldq_propagation(self, linearity_hdu, refhdu, lastframe_hdu):
         """
         check that proper Data Quality flags are added according to reference
