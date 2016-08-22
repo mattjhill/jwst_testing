@@ -42,7 +42,7 @@ def get_config_file_names(config,args):
     # select specific tests if the option is set in the config file
     try:
         pytest_args.append('-k '+config.get("options","tests"))
-    except ConfigParser.NoSectionError:
+    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
         pass
 
     # make sure only test_pipeline.py is used
