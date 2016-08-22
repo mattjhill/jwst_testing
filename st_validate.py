@@ -25,11 +25,18 @@ def get_config_file_names(config,args):
     dark_current_file = config.get("dark_current","dark_current_file")
     jump_file = config.get("jump","jump_file")
     ramp_fit_file = config.get("ramp_fit","ramp_fit_file")
-    pytest.main(['-v', '--dq_init_file='+dq_init_file, '--sat_file='+sat_file,
-        '--ipc_file='+ipc_file, '--superbias_file='+superbias_file,
-        '--refpix='+refpix_file, '--lastframe='+lastframe_file,
-        '--linearity_file='+linearity_file, '--dark_current_file='+ dark_current_file,
-        '--jump_file='+jump_file, '--ramp_fit_file='+ramp_fit_file])
+    pytest.main(['-v', 
+        '--dq_init_file='+dq_init_file, 
+        '--sat_file='+sat_file,
+        '--ipc_file='+ipc_file, 
+        '--superbias_file='+superbias_file,
+        '--refpix_file='+refpix_file, 
+        '--reset_file='+reset_file,
+        '--lastframe_file='+lastframe_file,
+        '--linearity_file='+linearity_file, 
+        '--dark_current_file='+ dark_current_file,
+        '--jump_file='+jump_file, 
+        '--ramp_fit_file='+ramp_fit_file])
 
 # def check_if_input_fits(args):
 #     """
