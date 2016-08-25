@@ -13,6 +13,8 @@ def get_config_file_names(config,args):
     Reads file names for each step from set_values.cfg and runs them through
     pytest if its value is not None
     """
+
+    # 2A Steps
     config.read(args.chosen_config)
     dq_init_file = config.get("dq_init","dq_init_file")
     sat_file = config.get("saturation","sat_file")
@@ -26,6 +28,14 @@ def get_config_file_names(config,args):
     jump_file = config.get("jump","jump_file")
     ramp_fit_file = config.get("ramp_fit","ramp_fit_file")
 
+    # 2B Image Steps
+    assign_wcs_file = config.get("assign_wcs","assign_wcs_file")
+    flat_field_file = config.get("flat_field","flat_field_file")
+    persistence_file = config.get("persistence","persistence_file")
+    emission_file = config.get("emission","emission_file")
+    photom_file = config.get("photom","photom_file")
+
+
     pytest_args = ['-v', 
         '--dq_init_file='+dq_init_file, 
         '--sat_file='+sat_file,
@@ -37,7 +47,12 @@ def get_config_file_names(config,args):
         '--linearity_file='+linearity_file, 
         '--dark_current_file='+ dark_current_file,
         '--jump_file='+jump_file, 
-        '--ramp_fit_file='+ramp_fit_file]
+        '--ramp_fit_file='+ramp_fit_file,
+        '--assign_wcs_file='+assign_wcs_file,
+        '--flat_field_file='+flat_field_file,
+        '--persistence_file='+persistence_file,
+        '--emission_file='+emission_file,
+        '--photom_file='+photom_file]
 
     # select specific tests if the option is set in the config file
     try:

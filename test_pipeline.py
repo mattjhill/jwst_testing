@@ -45,10 +45,13 @@ dq_dict = {
 }
 
 def bitwise_propagate(refhdu, inhdu):
-    pixeldq = inhdu['PIXELDQ'].data
+    if 'PIXELDQ' in inhdu:
+        pixeldq = inhdu['PIXELDQ'].data
+    if 'DQ' in inhdu:
+        pixeldq = inhdu['DQ'].data
+
     for row in refhdu['DQ_DEF'].data:
         try:
-            print("{} {} {}".format(row['NAME'], row['BIT'], dq_dict[row['NAME']]))
             # find which pixels have the bit set
             flagged = (np.bitwise_and(1, np.right_shift(refhdu['DQ'].data, row['BIT']))).astype(np.uint32)
             # shift them to the correct bit for PIXELDQ
@@ -343,3 +346,64 @@ class TestDarkCurrentStep:
         """
         assert np.all(bitwise_propagate(refhdu, linearity_hdu) == dark_current_hdu['PIXELDQ'].data)
 
+
+##############################################################################
+################################# 2B steps ###################################
+##############################################################################
+
+@pytest.mark.assign_wcs
+class TestAssignWCSStep:
+    """
+    The base class for testing the assign_wcs step
+    """
+
+@pytest.mark.flat_field
+class TestFlatFieldStep:
+    """
+    The base class for testing the flat_field step
+    """
+
+    @pytest.fixture
+    def refhdu(self, flat_field_hdu):
+        CRDS = '/grp/crds/cache/references/jwst/'
+        ref_file = CRDS+flat_field_hdu[0].header['R_FLAT'][7:]
+        return fits.open(ref_file)
+
+    def test_flat_field_correction(self, flat_field_hdu, refhdu, assign_wcs_hdu):
+        """
+        Check that the flat field correction is applied properly to the input file.
+        The flat correction should divide the input data by the matching pixel values in the 
+        reference file unless they are flagged in reference file DQ extension.
+        """
+        correct = refhdu['DQ'].data == 0
+        expected_flat = assign_wcs_hdu['SCI'].data
+        expected_flat[correct] = assign_wcs_hdu['SCI'].data[correct]/refhdu['SCI'].data[correct]
+        assert np.all(flat_field_hdu['SCI'].data  == expected_flat)
+
+    @pytest.mark.xfail
+    def test_flat_field_dq(self, flat_field_hdu, refhdu, assign_wcs_hdu):
+        """
+        check that proper Data quality flags are added according to the reference file.
+
+        NOTE: This fails in build 6.
+        """
+        assert np.all(bitwise_propagate(refhdu, assign_wcs_hdu) == flat_field_hdu['DQ'].data)
+
+
+@pytest.mark.persistence
+class TestPersistenceStep:
+    """
+    The base class for testing the persistence step
+    """
+
+@pytest.mark.emission
+class TestEmissionStep:
+    """
+    The base class for testing the emission step
+    """
+
+@pytest.mark.photom
+class TestPhotomStep:
+    """
+    The base class for testing the photom step
+    """

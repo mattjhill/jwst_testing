@@ -32,6 +32,18 @@ def pytest_addoption(parser):
     parser.addoption("--ramp_fit_file", action="store",
         help="specifies the file used for the ramp fit test")
 
+    # 2B Image Steps
+
+    parser.addoption("--assign_wcs_file", action="store",
+        help="specifies the file used for the assign_wcs test")
+    parser.addoption("--flat_field_file", action="store",
+        help="specifies the file used for the flat_field test")
+    parser.addoption("--persistence_file", action="store",
+        help="specifies the file used for the persistence test")
+    parser.addoption("--emission_file", action="store",
+        help="specifies the file used for the emission test")
+    parser.addoption("--photom_file", action="store",
+        help="specifies the file used for the photom test")
 
 @pytest.fixture
 def dq_init_hdu(request):
@@ -132,6 +144,51 @@ def ramp_fit_hdu(request):
     ramp_fit_file = request.config.getoption("--ramp_fit_file")
     return fits.open(ramp_fit_file)
 
+@pytest.fixture()
+def assign_wcs_hdu(request):
+    """
+    Takes the --assign_wcs_file cmd line arg and opens the fits file
+    this allows hdulist to be accessible by all test in the class.
+    """
+    assign_wcs_file = request.config.getoption("--assign_wcs_file")
+    return fits.open(assign_wcs_file)
+
+@pytest.fixture()
+def flat_field_hdu(request):
+    """
+    Takes the --flat_field_file cmd line arg and opens the fits file
+    this allows hdulist to be accessible by all test in the class.
+    """
+    flat_field_file = request.config.getoption("--flat_field_file")
+    return fits.open(flat_field_file)
+
+@pytest.fixture()
+def persistence_hdu(request):
+    """
+    Takes the --persistence_file cmd line arg and opens the fits file
+    this allows hdulist to be accessible by all test in the class.
+    """
+    persistence_file = request.config.getoption("--persistence_file")
+    return fits.open(persistence_file)
+
+@pytest.fixture()
+def emission_hdu(request):
+    """
+    Takes the --emission_file cmd line arg and opens the fits file
+    this allows hdulist to be accessible by all test in the class.
+    """
+    emission_file = request.config.getoption("--emission_file")
+    return fits.open(emission_file)
+
+@pytest.fixture()
+def photom_hdu(request):
+    """
+    Takes the --photom_file cmd line arg and opens the fits file
+    this allows hdulist to be accessible by all test in the class.
+    """
+    photom_file = request.config.getoption("--photom_file")
+    return fits.open(photom_file)
+    
 def pytest_runtest_setup(item):
 
     if 'dq_init' in item.keywords and item.config.getvalue("--dq_init_file") == 'None':
@@ -156,3 +213,14 @@ def pytest_runtest_setup(item):
         pytest.skip("requires a jump_file")
     if 'ramp_fit' in item.keywords and item.config.getvalue("--ramp_fit_file") == 'None':
         pytest.skip("requires a ramp_fit_file")
+
+    if 'assign_wcs' in item.keywords and item.config.getvalue("--assign_wcs_file") == 'None':
+        pytest.skip("requires an assign_wcs_file")
+    if 'flat_field' in item.keywords and item.config.getvalue("--flat_field_file") == 'None':
+        pytest.skip("requires a flat_field_file")
+    if 'persistence' in item.keywords and item.config.getvalue("--persistence_file") == 'None':
+        pytest.skip("requires a persistence_file")
+    if 'emission' in item.keywords and item.config.getvalue("--emission_file") == 'None':
+        pytest.skip("requires a emission_file")
+    if 'photom' in item.keywords and item.config.getvalue("--photom_file") == 'None':
+        pytest.skip("requires a photom_file")
