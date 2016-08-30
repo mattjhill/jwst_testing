@@ -62,6 +62,7 @@ def bitwise_propagate(refhdu, inhdu):
             print("No DQ mnemonic "+row['NAME'])
     return pixeldq
 
+
 @pytest.mark.dq_init
 class TestDQInitStep:
     """
@@ -286,7 +287,7 @@ class TestLinearityStep:
     The base class for testing the LinearityStep
     """
 
-    @pytest.fixture
+    @pytest.fixture(scope="class")
     def refhdu(self, linearity_hdu):
         CRDS = '/grp/crds/cache/references/jwst/'
         ref_file = CRDS+linearity_hdu[0].header['R_LINEAR'][7:]
@@ -311,11 +312,46 @@ class TestLinearityStep:
         # and ignored elsewhere
         assert linearity_applied and linearity_ignored
 
-    def test_linearity_residuals(self, linearity_hdu):
+    @pytest.fixture(scope="class")
+    def percent_rms(self, linearity_hdu):
+        """
+        Calculate the percent rms after fitting a line to the linearity corrected
+        ramps.
+        """
+        data = linearity_hdu['SCI'].data[0]
+        groupdq = linearity_hdu['GROUPDQ'].data[0]
+        pixeldq = linearity_hdu['PIXELDQ'].data
+        groups = np.arange(data.shape[0])
+
+        #residuals = np.zeros_like(data)
+        rms = np.zeros_like(data[0])
+        for (x,y), val in np.ndenumerate(data[0]):
+            if x % 500 == 0 and y == 0:
+                print(x,y)
+            usable = groupdq[:,x,y] == 0
+            residuals = np.zeros(190)
+            if usable.sum() > 4 and pixeldq[x,y] == 0: # make sure there are atleast 4 unsaturated groups
+                p = np.polyfit(groups[usable], data[:,x,y][usable], 1)
+                res = np.polyval(p, groups[usable]) - data[:,x,y][usable]
+                #residuals[usable] = res
+                rms[x,y] = np.std(res) / np.max(data[:,x,y][usable]) * 100
+
+        return rms
+
+    def test_linearity_median_residuals_rms_lt_1percent(self, percent_rms):
         """
         Check that after the linearity correction the ramps agree with a linear fit to within
-        some threshold (0.25% ?)
+        some threshold (1% ?)
         """
+        good = percent_rms != 0
+        assert np.median(percent_rms[good]) < 1.
+
+    def test_linearity_99percent_of_residuals_rms_lt1percent(self, percent_rms):
+        """
+        Check that more than 99% of pixels have rms residuals < 1%
+        """
+        good = np.logical_and(percent_rms != 0, ~np.isnan(percent_rms))
+        assert float(np.sum(percent_rms[good] < 1.))/len(percent_rms[good]) < 99.
 
     @pytest.mark.lastframe
     def test_linearity_pixeldq_propagation(self, linearity_hdu, refhdu, lastframe_hdu):
