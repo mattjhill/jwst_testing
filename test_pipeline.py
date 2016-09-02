@@ -3,8 +3,6 @@ This module contains the validation testing for the JWST Calibration
 Pipeline.
 """
 
-__docformat__ = 'reStructuredText'
-
 from astropy.io import fits
 import numpy as np
 import unittest
@@ -318,23 +316,23 @@ class TestLinearityStep:
         Calculate the percent rms after fitting a line to the linearity corrected
         ramps.
         """
-        data = linearity_hdu['SCI'].data[0]
-        groupdq = linearity_hdu['GROUPDQ'].data[0]
+        nints, ngroups, nx, ny = linearity_hdu['SCI'].data.shape
         pixeldq = linearity_hdu['PIXELDQ'].data
-        groups = np.arange(data.shape[0])
-
-        #residuals = np.zeros_like(data)
-        rms = np.zeros_like(data[0])
-        for (x,y), val in np.ndenumerate(data[0]):
-            if x % 500 == 0 and y == 0:
-                print(x,y)
-            usable = groupdq[:,x,y] == 0
-            residuals = np.zeros(190)
-            if usable.sum() > 4 and pixeldq[x,y] == 0: # make sure there are atleast 4 unsaturated groups
-                p = np.polyfit(groups[usable], data[:,x,y][usable], 1)
-                res = np.polyval(p, groups[usable]) - data[:,x,y][usable]
-                #residuals[usable] = res
-                rms[x,y] = np.std(res) / np.max(data[:,x,y][usable]) * 100
+        rms = np.zeros((nints, nx, ny))
+        for i in range(nints):
+            data = linearity_hdu['SCI'].data[i]
+            groupdq = linearity_hdu['GROUPDQ'].data[i]
+            groups = np.arange(data.shape[0])
+            for (x,y), val in np.ndenumerate(data[0]):
+                if x % 500 == 0 and y == 0:
+                    print(x,y)
+                usable = groupdq[:,x,y] == 0
+                residuals = np.zeros(groupdq[0].shape)
+                if usable.sum() > 4 and pixeldq[x,y] == 0: # make sure there are atleast 4 unsaturated groups
+                    p = np.polyfit(groups[usable], data[:,x,y][usable], 1)
+                    res = np.polyval(p, groups[usable]) - data[:,x,y][usable]
+                    #residuals[usable] = res
+                    rms[i, x,y] = np.std(res) / np.max(data[:,x,y][usable]) * 100
 
         return rms
 

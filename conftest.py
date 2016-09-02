@@ -108,7 +108,7 @@ def lastframe_hdu(request):
     lastframe_file = request.config.getoption("--lastframe_file")
     return fits.open(lastframe_file)
 
-@pytest.fixture()
+@pytest.fixture(scope="module")
 def linearity_hdu(request):
     """
     Takes the --linearity_file cmd line arg and opens the fits file
