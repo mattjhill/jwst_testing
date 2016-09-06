@@ -277,7 +277,27 @@ class TestResetStep:
         assert np.all(bitwise_propagate(refhdu, refpix_hdu) == reset_hdu['PIXELDQ'].data)
 
 
+class TestLastframeStep:
+    """
+    The base class for testing the Lastframe Step
+    """
+    @pytest.fixture
+    def refhdu(self, lastframe_hdu):
+        if lastframe_hdu[0].header['INSTRUME'] != 'MIRI':
+            pytest.skip()
 
+        CRDS = '/grp/crds/cache/references/jwst/'
+        ref_file = CRDS+lastframe_hdu[0].header['R_LASTFR'][7:]
+        return fits.open(ref_file)
+
+    def test_lastframe_correction(self, reset_hdu, refhdu, lastframe_hdu):
+        """
+        The Lastframe step should subtract the reference values from the last frame of 
+        each integration.  Only for MIRI data.
+        """
+        expected = reset_hdu['SCI'].data
+        expected[:,-1,:,:] -= refhdu['SCI'].data
+        assert np.all(expected == lastframe_hdu['SCI'].data)
 
 @pytest.mark.linearity
 class TestLinearityStep:
