@@ -1,8 +1,3 @@
-"""
-This module contains the validation testing for the JWST Calibration
-Pipeline.
-"""
-
 from astropy.io import fits
 import numpy as np
 import unittest
@@ -59,7 +54,7 @@ def bitwise_propagate(refhdu, pixeldq):
 @pytest.mark.dq_init
 class TestDQInitStep:
     """
-    The base class for testing the DQInitStep.
+    The base class for testing the Data Quality Initialization.
     """
     @pytest.fixture
     def refhdu(self, dq_init_hdu):
@@ -69,125 +64,73 @@ class TestDQInitStep:
 
     def test_pixeldq_ext_exists(self, dq_init_hdu):
         """
-        test_pixeldq_ext_exists
-
-        Make sure the PIXELDQ extensions has been added to the HDUList.
+        Check that the PIXELDQ extension has been added to the output HDUList.
         """
         assert("PIXELDQ" in dq_init_hdu)
 
     def test_pixeldq_propagation(self, dq_init_hdu, refhdu):
         """
-        Make sure all DQ flags are propagated from the reference file to PIXELDQ
+        Check that all DQ flags are propagated from the reference file (header keyword 
+        R_MASK) to the output PIXELDQ array.
+
+        .. table:: Supported Flags
+
+            +-----+-------+---------------+---------------------------------------------+
+            | Bit | Value | Name          | Description                                 |
+            +=====+=======+===============+=============================================+
+            | 0   | 1     | DO_NOT_USE    | Bad pixel.                                  |
+            +-----+-------+---------------+---------------------------------------------+
+            | 1   | 2     | NON_SCIENCE   | Pixel not on science portion of detector    |
+            +-----+-------+---------------+---------------------------------------------+
+            | 2   | 4     | DEAD          | Dead pixel                                  |
+            +-----+-------+---------------+---------------------------------------------+
+            | 3   | 8     | LOW_QE        | Low quantum efficiency                      |
+            +-----+-------+---------------+---------------------------------------------+
+            | 4   | 16    | NO_GAIN_VALUE | Gain cannot be measured                     |
+            +-----+-------+---------------+---------------------------------------------+
+            | 5   | 32    | OPEN          | open Pixel (counts move to adjacent pixels) |
+            +-----+-------+---------------+---------------------------------------------+
+            | 6   | 64    | ADJ_OPEN      | Adjacent to open pixel                      |
+            +-----+-------+---------------+---------------------------------------------+
+
         """
-        assert np.all(bitwise_propagate(refhdu, np.zeros_like(dq_init_hdu['PIXELDQ'].data)) == dq_init_hdu['PIXELDQ'].data)
-
-    # def test_good_pixeldq_propagation(self, dq_init_hdu, refhdu):
-    #     """
-    #     make sure that the values in the reference mask are properly
-    #     translated to values in PIXELDQ
-    #     """
-
-    #     pixeldq = dq_init_hdu['PIXELDQ'].data
-    #     #find good/bad pixels
-    #     # check that all good and pixels are preserved 
-    #     good = np.where(refhdu['DQ'].data == 0)
-    #     assert np.all(pixeldq[good] == 0)
-
-    # def test_dead_pixeldq_propagtion(self, dq_init_hdu, refhdu):
-    #     """
-    #     make sure that the values in the reference mask are properly
-    #     translated to values in PIXELDQ
-    #     """
-
-    #     pixeldq = dq_init_hdu['PIXELDQ'].data
-
-    #     # check dead pixels
-    #     dead = np.where(refhdu['DQ'].data == 3)
-    #     assert np.all(pixeldq[dead] == 1025)
-
-    # def test_hot_pixeldq_propagation(self, dq_init_hdu, refhdu):
-    #     """
-    #     make sure that the values in the reference mask are properly
-    #     translated to values in PIXELDQ
-    #     """
-
-    #     pixeldq = dq_init_hdu['PIXELDQ'].data
-
-    #     # #check hot pixels
-    #     hot = np.where(refhdu['DQ'].data == 5)
-    #     assert np.all(pixeldq[hot] == 2049)
-
-    # def test_unreliable_slope_pixeldq_propagation(self, dq_init_hdu, refhdu):
-    #     """
-    #     make sure that the values in the reference mask are properly
-    #     translated to values in PIXELDQ
-    #     """
-
-    #     pixeldq = dq_init_hdu['PIXELDQ'].data
-
-    #     # #check unreliable slope
-    #     urs = np.where(refhdu['DQ'].data == 9)
-    #     assert np.all(pixeldq[urs] == 16777217)
-
-    # def test_rc_pixeldq_propagation(self, dq_init_hdu, refhdu):
-    #     """
-    #     make sure that the values in the reference mask are properly
-    #     translated to values in PIXELDQ
-    #     """
-
-    #     pixeldq = dq_init_hdu['PIXELDQ'].data
-
-    #     # #check RC pixels
-    #     rc = np.where(refhdu['DQ'].data == 17)
-    #     assert np.all(pixeldq[rc] == 16385)
+        input_dq = np.zeros_like(dq_init_hdu['PIXELDQ'].data)
+        result = bitwise_propagate(refhdu, input_dq) == dq_init_hdu['PIXELDQ'].data
+        assert np.all(result)
 
     def test_groupdq_ext_exists(self, dq_init_hdu):
         """
-        Checks that the groupdq has been set.
+        Check that the GROUPDQ extension has been added to the output HDUList.
         """
-        # if using object from pipeline
-        # assert(hasattr(self.dq_init., 'groupdq'))
 
-        # if using fits file generated by strun
         assert("GROUPDQ" in dq_init_hdu)
 
     def test_groupdq_vals_all_zero(self, dq_init_hdu):
         """
-        Checks that the groupdq extension 
-        values are all zero after dq_init.
+        Check that the GROUPDQ array values are all initialized to zero.
         """
-        # if using object from pipeline
-        # assert(np.all(self.dq_init.groupdq == 0))
 
-        # if using fits file generated by strun
         assert(np.all(dq_init_hdu["GROUPDQ"].data == 0))
 
 
     def test_err_ext_exists(self, dq_init_hdu):
         """
-        Check that all err extension values are all zero.
+        Check that the ERR extension has been added to the output HDUList.
         """
 
-        # if using object from pipeline
-        # assert(hasattr(self.dq_init, 'err'))
-        # if using fits file generated by strun
         assert("ERR" in dq_init_hdu)
 
     def test_err_vals_all_zero(self, dq_init_hdu):
         """
-        Check that all err extension values are all zero.
+        Check that the ERR array values are all initialized to zero.
         """
 
-        # if using object from pipeline
-        # assert(np.all(self.dq_init.pixeldq == 0))
-
-        # if using fits file generated by strun
         assert(np.all(dq_init_hdu["ERR"].data == 0))
 
 @pytest.mark.saturation
 class TestSaturationStep:
     """
-    The base class for testing the SaturationStep.
+    The base class for testing Saturation Check.
     """
 
     @pytest.fixture
@@ -196,11 +139,12 @@ class TestSaturationStep:
         ref_file = CRDS+sat_hdu[0].header['R_SATURA'][7:]
         return fits.open(ref_file)
 
-    def test_groupdq_vals(self, sat_hdu, refhdu):
+    def test_saturation_groupdq_set(self, sat_hdu, refhdu):
         """
-        Check that saturated pixels are flagged properly
+        Check that for each group in the science data file, if the pixel exceeds the 
+        saturation level, then the SATURATED flag is set for that pixel in the 
+        corresponding plane of the GROUPDQ array – and in all subsequent planes.  
         """
-        # TODO
         if 'DQ' in refhdu:
             flag = np.logical_and(sat_hdu['SCI'].data >= refhdu['SCI'].data, 
                 refhdu['DQ'].data != 2)
@@ -219,15 +163,26 @@ class TestSaturationStep:
     @pytest.mark.dq_init
     def test_saturation_pixeldq_propagation(self, sat_hdu, refhdu, dq_init_hdu):
         """
-        check that proper Data Quality flags are added according to reference
-        file.
+        Check that all DQ flags are propagated from the reference file 
+        (header keyword R_SATURA) to the output PIXELDQ array.
+
+        .. table:: Supported Flags
+
+            +-----+-------+---------------+--------------------------------+
+            | Bit | Value | Name          | Description                    |
+            +=====+=======+===============+================================+
+            | 0   | 1     | DO_NOT_USE    | Bad pixel.                     |
+            +-----+-------+---------------+--------------------------------+
+            | 1   | 2     | NO_SAT_CHECK  | Saturation check not available |
+            +-----+-------+---------------+--------------------------------+
+
         """
         assert np.all(bitwise_propagate(refhdu, dq_init_hdu['PIXELDQ'].data) == sat_hdu['PIXELDQ'].data)
 
 @pytest.mark.ipc
 class TestIPCStep:
     """
-    The base class for testing the IPCStep.
+    The base class for testing IPC Deconvolution.
     """
 
     @pytest.fixture
@@ -239,7 +194,7 @@ class TestIPCStep:
 @pytest.mark.superbias
 class TestSuperbiasStep:
     """
-    The base class for testing the SuperbiasStep
+    The base class for testing Superbias Subtraction.
     """
 
     @pytest.fixture
@@ -251,15 +206,26 @@ class TestSuperbiasStep:
     @pytest.mark.saturation
     def test_superbias_pixeldq_propagation(self, superbias_hdu, refhdu, sat_hdu):
         """
-        check that proper Data Quality flags are added according to reference
-        file.
+        Check that all DQ flags are propagated from the reference file 
+        (header keyword R_SUPERB) to the output PIXELDQ array.
+
+        .. table:: Supported Flags
+
+            +-----+-------+-----------------+---------------------+
+            | Bit | Value | Name            | Description         |
+            +=====+=======+=================+=====================+
+            | 0   | 1     | DO_NOT_USE      | Bad pixel.          |
+            +-----+-------+-----------------+---------------------+
+            | 1   | 2     | UNRELIABLE_BIAS | Bias variance large |
+            +-----+-------+-----------------+---------------------+
+
         """
         assert np.all(bitwise_propagate(refhdu, sat_hdu['PIXELDQ'].data) == superbias_hdu['PIXELDQ'].data)
 
 @pytest.mark.refpix
 class TestRefpixStep:
     """
-    The base class for testing the RefpixStep
+    The base class for testing Reference-Pixel Correction.
     """
     @pytest.fixture
     def refhdu(self, refpix_hdu):
@@ -271,7 +237,7 @@ class TestRefpixStep:
 @pytest.mark.reset
 class TestResetStep:
     """
-    The base class for testing the ResetStep
+    The base class for testing the Reset-Anomaly Correction.
     """
     @pytest.fixture
     def refhdu(self, reset_hdu):
@@ -280,6 +246,16 @@ class TestResetStep:
         return fits.open(ref_file)
 
     def test_reset_correction(self, refpix_hdu, refhdu, reset_hdu):
+        """
+        Check that for each integration in the input science data, the 
+        reset corrections are subtracted, group by group, integration 
+        by integration. If the input science data contains more groups 
+        than the reset correction, then the correction for subsequent 
+        groups is zero. If the input science data contains more 
+        integrations than the reset correction, then the correction 
+        corresponding to the final integration in the reset file is used. 
+        Only performedfor MIRI data.
+        """
         nints, ngroups, nx, ny = reset_hdu['SCI'].data.shape
         print(nints, ngroups)
         results = []
@@ -295,12 +271,27 @@ class TestResetStep:
 
 
     def test_reset_pixeldq_propagation(self, refpix_hdu, refhdu, reset_hdu):
+        """
+        Check that all DQ flags are propagated from the reference file (header keyword 
+        R_RESET) to the output PIXELDQ array.
+
+        .. table:: Supported Flags
+
+            +-----+-------+------------------+----------------------------+
+            | Bit | Value | Name             | Description                |
+            +=====+=======+==================+============================+
+            | 0   | 1     | DO_NOT_USE       | Bad pixel.                 |
+            +-----+-------+------------------+----------------------------+
+            | 1   | 2     | UNRELIABLE_RESET | Sensitive to reset anomaly |
+            +-----+-------+------------------+----------------------------+
+
+        """
         assert np.all(bitwise_propagate(refhdu, refpix_hdu['PIXELDQ'].data) == reset_hdu['PIXELDQ'].data)
 
 
 class TestLastframeStep:
     """
-    The base class for testing the Lastframe Step
+    The base class for testing Last-Frame Correction.
     """
     @pytest.fixture
     def refhdu(self, lastframe_hdu):
@@ -313,8 +304,8 @@ class TestLastframeStep:
 
     def test_lastframe_correction(self, reset_hdu, refhdu, lastframe_hdu):
         """
-        The Lastframe step should subtract the reference values from the last frame of 
-        each integration.  Only for MIRI data.
+        Check that the values in the SCI extension of the last-frame reference file are 
+        subtracted from the final frame of the science exposure.
         """
         expected = reset_hdu['SCI'].data
         expected[:,-1,:,:] -= refhdu['SCI'].data
@@ -323,7 +314,7 @@ class TestLastframeStep:
 @pytest.mark.linearity
 class TestLinearityStep:
     """
-    The base class for testing the LinearityStep
+    The base class for testing the Linearity.
     """
 
     @pytest.fixture(scope="class")
@@ -334,7 +325,16 @@ class TestLinearityStep:
 
     def test_linearity_correction(self, linearity_hdu, refhdu, lastframe_hdu):
         """
-        Check that the linearity correction is properly applied to all relevant pixels.
+        Check that the linearity correction is properly applied to all relevant pixels. The algorithm 
+        uses a polynomial of the form
+
+        .. math::
+
+            F_c = \sum_{i=0}^N C_i F^i
+        
+        where :math:`F_c` is the corrected counts, :math:`C` are the correction coefficients, and :math:`F` 
+        is the uncorrected counts.  The coefficients of the polynomial at each pixel are given by the 
+        reference file.        
         """
 
         # ignore pixels which are saturated (GROUPDQ = 2) or NO_LIN_CORR (DQ = 2)
@@ -352,7 +352,7 @@ class TestLinearityStep:
         assert linearity_applied and linearity_ignored
 
     @pytest.fixture(scope="class")
-    def percent_rms(self, linearity_hdu):
+    def _percent_rms(self, linearity_hdu):
         """
         Calculate the percent rms after fitting a line to the linearity corrected
         ramps.
@@ -377,26 +377,44 @@ class TestLinearityStep:
 
         return rms
 
-    def test_linearity_median_residuals_rms_lt_1percent(self, percent_rms):
+    def test_linearity_median_residuals_rms_lt_1percent(self, _percent_rms):
         """
-        Check that after the linearity correction the ramps agree with a linear fit to within
-        some threshold (1% ?)
+        Check that after the linearity correction the ramps agree with a linear 
+        fit to an percent RMS of less than 1%.
+        Where
+        
+        .. math::
+            \%RMS = \\frac{F - F_c}{\max{F_c}}
+        
         """
-        good = percent_rms != 0
-        assert np.median(percent_rms[good]) < 1.
+        good = _percent_rms != 0
+        assert np.median(_percent_rms[good]) < 1.
 
-    def test_linearity_99percent_of_residuals_rms_lt1percent(self, percent_rms):
+    def test_linearity_99percent_of_residuals_rms_lt1percent(self, _percent_rms):
         """
-        Check that more than 99% of pixels have rms residuals < 1%
+        Check that more than 99% of pixels' residuals have percent RMS < 1%.
         """
-        good = np.logical_and(percent_rms != 0, ~np.isnan(percent_rms))
-        assert float(np.sum(percent_rms[good] < 1.))/len(percent_rms[good]) < 99.
+        good = np.logical_and(_percent_rms != 0, ~np.isnan(_percent_rms))
+        assert float(np.sum(_percent_rms[good] < 1.))/len(_percent_rms[good]) < 99.
 
     @pytest.mark.lastframe
     def test_linearity_pixeldq_propagation(self, linearity_hdu, refhdu, lastframe_hdu):
         """
-        check that proper Data Quality flags are added according to reference
-        file.
+        Check that all DQ flags are propagated from the reference file (header keyword 
+        R_LINEAR) to the output PIXELDQ array.
+
+        .. table:: Supported Flags
+
+            +-----+-------+------------------+-----------------------------------------+
+            | Bit | Value | Name             | Description                             |
+            +=====+=======+==================+=========================================+
+            | 0   | 1     | DO_NOT_USE       | Bad pixel.                              |
+            +-----+-------+------------------+-----------------------------------------+
+            | 1   | 2     | NONLINEAR        | Pixel highly nonlinear.                 |
+            +-----+-------+------------------+-----------------------------------------+
+            | 2   | 4     | NO_LIN_CORR      | Linearity correction not available.     |
+            +-----+-------+------------------+-----------------------------------------+
+
         """
         try:
             assert np.all(bitwise_propagate(refhdu, lastframe_hdu['PIXELDQ'].data) == linearity_hdu['PIXELDQ'].data)
@@ -406,7 +424,7 @@ class TestLinearityStep:
 @pytest.mark.dark_current
 class TestDarkCurrentStep:
     """
-    The base class for testing the DarkCurrentStep
+    The base class for testing the Dark Current Subtraction.
     """
 
     @pytest.fixture
@@ -417,10 +435,36 @@ class TestDarkCurrentStep:
 
     def test_dark_current_pixeldq_propagation(self, dark_current_hdu, refhdu, linearity_hdu):
         """
-        check that proper Data quality flags are added according to the reference file.
+        Check that all DQ flags are propagated from the reference file (header keyword 
+        R_DARK) to the output PIXELDQ array.
+
+        .. table:: Supported Flags
+
+            +-----+-------+------------------+----------------------+
+            | Bit | Value | Name             | Description          |
+            +=====+=======+==================+======================+
+            | 0   | 1     | DO_NOT_USE       | Bad pixel.           |
+            +-----+-------+------------------+----------------------+
+            | 1   | 2     | HOT              | Hot Pixel.           |
+            +-----+-------+------------------+----------------------+
+            | 2   | 4     | WARM             | Warm pixel           |
+            +-----+-------+------------------+----------------------+
+            | 3   | 8     | UNRELIABLE_DARK  | Dark variance large  |
+            +-----+-------+------------------+----------------------+
+            | 4   | 16    | UNRELIABLE_SLOPE | Slope variance large |
+            +-----+-------+------------------+----------------------+
         """
         assert np.all(bitwise_propagate(refhdu, linearity_hdu['PIXELDQ'].data) == dark_current_hdu['PIXELDQ'].data)
 
+class TestJumpStep:
+    """
+    The base class for testing Jump Detection.
+    """
+
+class TestRampFitStep:
+    """
+    The base class for testing Ramp Fitting.
+    """
 
 ##############################################################################
 ################################# 2B steps ###################################
