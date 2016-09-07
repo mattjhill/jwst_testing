@@ -73,6 +73,11 @@ class TestDQInitStep:
         return fits.open(ref_file)
 
     def test_pixeldq_ext_exists(self, dq_init_hdu):
+        """
+        test_pixeldq_ext_exists
+
+        Make sure the PIXELDQ extensions has been added to the HDUList.
+        """
         assert("PIXELDQ" in dq_init_hdu)
 
     def test_good_pixeldq_propagation(self, dq_init_hdu, refhdu):
