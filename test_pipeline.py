@@ -273,6 +273,21 @@ class TestResetStep:
         ref_file = CRDS+reset_hdu[0].header['R_RESET'][7:]
         return fits.open(ref_file)
 
+    def test_reset_correction(self, refpix_hdu, refhdu, reset_hdu):
+        nints, ngroups, nx, ny = reset_hdu['SCI'].data.shape
+        print(nints, ngroups)
+        results = []
+        for i in range(nints):
+            for g in range(ngroups-1):
+                if i >= refhdu['SCI'].data.shape[0]:
+                    results.append(np.allclose(refpix_hdu['SCI'].data[i,g,:,:] - refhdu['SCI'].data[-1,g,:,:], reset_hdu['SCI'].data[i,g,:,:]))
+                elif g >= refhdu['SCI'].data.shape[1]:
+                    results.append(np.allclose(refpix_hdu['SCI'].data[i,g,:,:], reset_hdu['SCI'].data[i,g,:,:]))
+                else:
+                    results.append(np.allclose(refpix_hdu['SCI'].data[i,g,:,:] - refhdu['SCI'].data[i,g,:,:], reset_hdu['SCI'].data[i,g,:,:]))
+        assert np.all(results)
+
+
     def test_reset_pixeldq_propagation(self, refpix_hdu, refhdu, reset_hdu):
         assert np.all(bitwise_propagate(refhdu, refpix_hdu) == reset_hdu['PIXELDQ'].data)
 
@@ -297,7 +312,7 @@ class TestLastframeStep:
         """
         expected = reset_hdu['SCI'].data
         expected[:,-1,:,:] -= refhdu['SCI'].data
-        assert np.all(expected == lastframe_hdu['SCI'].data)
+        assert np.allclose(expected, lastframe_hdu['SCI'].data)
 
 @pytest.mark.linearity
 class TestLinearityStep:
