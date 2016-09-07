@@ -42,12 +42,7 @@ dq_dict = {
 'OTHER_BAD_PIXEL' : 30,
 }
 
-def bitwise_propagate(refhdu, inhdu):
-    if 'PIXELDQ' in inhdu:
-        pixeldq = inhdu['PIXELDQ'].data
-    if 'DQ' in inhdu:
-        pixeldq = inhdu['DQ'].data
-
+def bitwise_propagate(refhdu, pixeldq):
     for row in refhdu['DQ_DEF'].data:
         try:
             # find which pixels have the bit set
@@ -80,65 +75,71 @@ class TestDQInitStep:
         """
         assert("PIXELDQ" in dq_init_hdu)
 
-    def test_good_pixeldq_propagation(self, dq_init_hdu, refhdu):
+    def test_pixeldq_propagation(self, dq_init_hdu, refhdu):
         """
-        make sure that the values in the reference mask are properly
-        translated to values in PIXELDQ
+        Make sure all DQ flags are propagated from the reference file to PIXELDQ
         """
+        assert np.all(bitwise_propagate(refhdu, np.zeros_like(dq_init_hdu['PIXELDQ'].data)) == dq_init_hdu['PIXELDQ'].data)
 
-        pixeldq = dq_init_hdu['PIXELDQ'].data
-        #find good/bad pixels
-        # check that all good and pixels are preserved 
-        good = np.where(refhdu['DQ'].data == 0)
-        assert np.all(pixeldq[good] == 0)
+    # def test_good_pixeldq_propagation(self, dq_init_hdu, refhdu):
+    #     """
+    #     make sure that the values in the reference mask are properly
+    #     translated to values in PIXELDQ
+    #     """
 
-    def test_dead_pixeldq_propagtion(self, dq_init_hdu, refhdu):
-        """
-        make sure that the values in the reference mask are properly
-        translated to values in PIXELDQ
-        """
+    #     pixeldq = dq_init_hdu['PIXELDQ'].data
+    #     #find good/bad pixels
+    #     # check that all good and pixels are preserved 
+    #     good = np.where(refhdu['DQ'].data == 0)
+    #     assert np.all(pixeldq[good] == 0)
 
-        pixeldq = dq_init_hdu['PIXELDQ'].data
+    # def test_dead_pixeldq_propagtion(self, dq_init_hdu, refhdu):
+    #     """
+    #     make sure that the values in the reference mask are properly
+    #     translated to values in PIXELDQ
+    #     """
 
-        # check dead pixels
-        dead = np.where(refhdu['DQ'].data == 3)
-        assert np.all(pixeldq[dead] == 1025)
+    #     pixeldq = dq_init_hdu['PIXELDQ'].data
 
-    def test_hot_pixeldq_propagation(self, dq_init_hdu, refhdu):
-        """
-        make sure that the values in the reference mask are properly
-        translated to values in PIXELDQ
-        """
+    #     # check dead pixels
+    #     dead = np.where(refhdu['DQ'].data == 3)
+    #     assert np.all(pixeldq[dead] == 1025)
 
-        pixeldq = dq_init_hdu['PIXELDQ'].data
+    # def test_hot_pixeldq_propagation(self, dq_init_hdu, refhdu):
+    #     """
+    #     make sure that the values in the reference mask are properly
+    #     translated to values in PIXELDQ
+    #     """
 
-        # #check hot pixels
-        hot = np.where(refhdu['DQ'].data == 5)
-        assert np.all(pixeldq[hot] == 2049)
+    #     pixeldq = dq_init_hdu['PIXELDQ'].data
 
-    def test_unreliable_slope_pixeldq_propagation(self, dq_init_hdu, refhdu):
-        """
-        make sure that the values in the reference mask are properly
-        translated to values in PIXELDQ
-        """
+    #     # #check hot pixels
+    #     hot = np.where(refhdu['DQ'].data == 5)
+    #     assert np.all(pixeldq[hot] == 2049)
 
-        pixeldq = dq_init_hdu['PIXELDQ'].data
+    # def test_unreliable_slope_pixeldq_propagation(self, dq_init_hdu, refhdu):
+    #     """
+    #     make sure that the values in the reference mask are properly
+    #     translated to values in PIXELDQ
+    #     """
 
-        # #check unreliable slope
-        urs = np.where(refhdu['DQ'].data == 9)
-        assert np.all(pixeldq[urs] == 16777217)
+    #     pixeldq = dq_init_hdu['PIXELDQ'].data
 
-    def test_rc_pixeldq_propagation(self, dq_init_hdu, refhdu):
-        """
-        make sure that the values in the reference mask are properly
-        translated to values in PIXELDQ
-        """
+    #     # #check unreliable slope
+    #     urs = np.where(refhdu['DQ'].data == 9)
+    #     assert np.all(pixeldq[urs] == 16777217)
 
-        pixeldq = dq_init_hdu['PIXELDQ'].data
+    # def test_rc_pixeldq_propagation(self, dq_init_hdu, refhdu):
+    #     """
+    #     make sure that the values in the reference mask are properly
+    #     translated to values in PIXELDQ
+    #     """
 
-        # #check RC pixels
-        rc = np.where(refhdu['DQ'].data == 17)
-        assert np.all(pixeldq[rc] == 16385)
+    #     pixeldq = dq_init_hdu['PIXELDQ'].data
+
+    #     # #check RC pixels
+    #     rc = np.where(refhdu['DQ'].data == 17)
+    #     assert np.all(pixeldq[rc] == 16385)
 
     def test_groupdq_ext_exists(self, dq_init_hdu):
         """
@@ -221,7 +222,7 @@ class TestSaturationStep:
         check that proper Data Quality flags are added according to reference
         file.
         """
-        assert np.all(bitwise_propagate(refhdu, dq_init_hdu) == sat_hdu['PIXELDQ'].data)
+        assert np.all(bitwise_propagate(refhdu, dq_init_hdu['PIXELDQ'].data) == sat_hdu['PIXELDQ'].data)
 
 @pytest.mark.ipc
 class TestIPCStep:
@@ -253,7 +254,7 @@ class TestSuperbiasStep:
         check that proper Data Quality flags are added according to reference
         file.
         """
-        assert np.all(bitwise_propagate(refhdu, sat_hdu) == superbias_hdu['PIXELDQ'].data)
+        assert np.all(bitwise_propagate(refhdu, sat_hdu['PIXELDQ'].data) == superbias_hdu['PIXELDQ'].data)
 
 @pytest.mark.refpix
 class TestRefpixStep:
@@ -294,7 +295,7 @@ class TestResetStep:
 
 
     def test_reset_pixeldq_propagation(self, refpix_hdu, refhdu, reset_hdu):
-        assert np.all(bitwise_propagate(refhdu, refpix_hdu) == reset_hdu['PIXELDQ'].data)
+        assert np.all(bitwise_propagate(refhdu, refpix_hdu['PIXELDQ'].data) == reset_hdu['PIXELDQ'].data)
 
 
 class TestLastframeStep:
@@ -398,7 +399,7 @@ class TestLinearityStep:
         file.
         """
         try:
-            assert np.all(bitwise_propagate(refhdu, lastframe_hdu) == linearity_hdu['PIXELDQ'].data)
+            assert np.all(bitwise_propagate(refhdu, lastframe_hdu['PIXELDQ'].data) == linearity_hdu['PIXELDQ'].data)
         except KeyError:
             assert np.all(refhdu['DQ'].data == 0)
 
@@ -418,7 +419,7 @@ class TestDarkCurrentStep:
         """
         check that proper Data quality flags are added according to the reference file.
         """
-        assert np.all(bitwise_propagate(refhdu, linearity_hdu) == dark_current_hdu['PIXELDQ'].data)
+        assert np.all(bitwise_propagate(refhdu, linearity_hdu['PIXELDQ'].data) == dark_current_hdu['PIXELDQ'].data)
 
 
 ##############################################################################
@@ -461,7 +462,7 @@ class TestFlatFieldStep:
 
         NOTE: This fails in build 6.
         """
-        assert np.all(bitwise_propagate(refhdu, assign_wcs_hdu) == flat_field_hdu['DQ'].data)
+        assert np.all(bitwise_propagate(refhdu, assign_wcs_hdu['DQ'].data) == flat_field_hdu['DQ'].data)
 
 
 @pytest.mark.persistence
