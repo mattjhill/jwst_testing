@@ -428,16 +428,18 @@ class TestDarkCurrentStep:
         nints, ngroups, nx, ny = dark_current_hdu['SCI'].shape
         nframes_tot = (nframes+groupgap)*ngroups
         if nframes_tot > refhdu['SCI'].data.shape[0]:
-            pytest.skip()
+            # data should remain unchanged if there are more frames in the 
+            # science data than the reference file
+            assert np.all(linearity_hdu['SCI'].data == dark_current_hdu['SCI'].data)
+        else:
+            dark_correct = np.zeros((nframes, ngroups, nx, ny))
+            data = refhdu['SCI'].data[:nframes_tot, :, :]
+            for i in range(nframes):
+                dark_correct[i] = data[i::(nframes+groupgap),:,:]
 
-        dark_correct = np.zeros((nframes, ngroups, nx, ny))
-        data = refhdu['SCI'].data[:nframes_tot, :, :]
-        for i in range(nframes):
-            dark_correct[i] = data[i::(nframes+groupgap),:,:]
-
-        dark_correct = np.average(dark_correct, axis=0)
-        result = linearity_hdu['SCI'].data - dark_correct
-        assert np.allclose(result, dark_current_hdu['SCI'].data)
+            dark_correct = np.average(dark_correct, axis=0)
+            result = linearity_hdu['SCI'].data - dark_correct
+            assert np.allclose(result, dark_current_hdu['SCI'].data)
 
 
     def test_dark_current_pixeldq_propagation(self, dark_current_hdu, refhdu, linearity_hdu):
