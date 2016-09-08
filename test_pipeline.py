@@ -433,6 +433,36 @@ class TestDarkCurrentStep:
         ref_file = CRDS+dark_current_hdu[0].header['R_DARK'][7:]
         return fits.open(ref_file)
 
+    def test_dark_current_subtraction(self, dark_current_hdu, refhdu, linearity_hdu):
+        """
+        The Dark Current step can use reference files with one of two formats:  If the reference 
+        file contains a ramp with NFRAMES=1 and GROUPGAP=0, then the program averages and skips dark 
+        frames to match the NFRAMES and GROUPGAP values of the science data, before performing a 
+        group-by-group subtraction of the dark-reference ramp from the science data.  To speed 
+        processing, if the reference file has NFRAMES and GROUPGAP values that match those of the 
+        data file, then the ramp will be subtracted as is, without additional averaging.  If the 
+        dark ramp has more groups than the science image, the extra dark groups are ignored.  If 
+        the dark ramp has fewer groups than the science image, the Dark Current step will issue a 
+        warning and return the science image unchanged.
+        """
+
+        nframes = dark_current_hdu[0].header['NFRAMES']
+        groupgap = dark_current_hdu[0].header['GROUPGAP']
+        nints, ngroups, nx, ny = dark_current_hdu['SCI'].shape
+        nframes_tot = (nframes+groupgap)*ngroups
+        if nframes_tot > refhdu['SCI'].data.shape[0]:
+            pytest.skip()
+
+        dark_correct = np.zeros((nframes, ngroups, nx, ny))
+        data = refhdu['SCI'].data[:nframes_tot, :, :]
+        for i in range(nframes):
+            dark_correct[i] = data[i::(nframes+groupgap),:,:]
+
+        dark_correct = np.average(dark_correct, axis=0)
+        result = linearity_hdu['SCI'].data - dark_correct
+        assert np.allclose(result, dark_current_hdu['SCI'].data)
+
+
     def test_dark_current_pixeldq_propagation(self, dark_current_hdu, refhdu, linearity_hdu):
         """
         Check that all DQ flags are propagated from the reference file (header keyword 
@@ -454,7 +484,14 @@ class TestDarkCurrentStep:
             | 4   | 16    | UNRELIABLE_SLOPE | Slope variance large |
             +-----+-------+------------------+----------------------+
         """
-        assert np.all(bitwise_propagate(refhdu, linearity_hdu['PIXELDQ'].data) == dark_current_hdu['PIXELDQ'].data)
+        nframes = dark_current_hdu[0].header['NFRAMES']
+        groupgap = dark_current_hdu[0].header['GROUPGAP']
+        nints, ngroups, nx, ny = dark_current_hdu['SCI'].shape
+        nframes_tot = (nframes+groupgap)*ngroups
+        if nframes_tot > refhdu['SCI'].data.shape[0]:
+            assert np.all(linearity_hdu['PIXELDQ'].data == dark_current_hdu['PIXELDQ'].data)
+        else:
+            assert np.all(bitwise_propagate(refhdu, linearity_hdu['PIXELDQ'].data) == dark_current_hdu['PIXELDQ'].data)
 
 class TestJumpStep:
     """
