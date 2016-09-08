@@ -254,7 +254,7 @@ class TestResetStep:
         groups is zero. If the input science data contains more 
         integrations than the reset correction, then the correction 
         corresponding to the final integration in the reset file is used. 
-        Only performedfor MIRI data.
+        Only performed for MIRI data.
         """
         nints, ngroups, nx, ny = reset_hdu['SCI'].data.shape
         print(nints, ngroups)
@@ -384,7 +384,7 @@ class TestLinearityStep:
         Where
         
         .. math::
-            \%RMS = \\frac{F - F_c}{\max{F_c}}
+            \%RMS = \\frac{F - F_c}{\max{F_c}} * 100
         
         """
         good = _percent_rms != 0
