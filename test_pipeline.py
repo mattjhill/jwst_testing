@@ -243,6 +243,14 @@ class TestSuperbiasStep:
         ref_file = CRDS+superbias_hdu[0].header['R_SUPERB'][7:]
         return fits.open(ref_file)
 
+    def test_superbias_subtraction(self, superbias_hdu, refhdu, sat_hdu):
+        """
+        Check that superbias is subtracted from each group in the image array, including 
+        reference pixels.  
+        """
+        check = refhdu['DQ'].data == 0
+        assert np.allclose(sat_hdu['SCI'].data[check] - refhdu['SCI'].data[check], superbias_hdu['SCI'].data[check])
+
     @pytest.mark.saturation
     def test_superbias_pixeldq_propagation(self, superbias_hdu, refhdu, sat_hdu):
         """
