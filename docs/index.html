@@ -1,12 +1,440 @@
-<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<HTML>
-   <HEAD>
-      <TITLE>
-         A Small Hello 
-      </TITLE>
-   </HEAD>
-<BODY>
-   <H1>Hi</H1>
-   <P>This is very minimal "hello world" HTML document.</P> 
-</BODY>
-</HTML>
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Welcome to ST_Validate’s documentation! &mdash; ST_Validate 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ST_Validate 0.1 documentation" href="#"/>
+        <link rel="next" title="Introduction" href="intro.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> ST_Validate
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test.html">Tests</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">ST_Validate</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>Welcome to ST_Validate&#8217;s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="welcome-to-st-validate-s-documentation">
+<h1>Welcome to ST_Validate&#8217;s documentation!<a class="headerlink" href="#welcome-to-st-validate-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>ST_Validate provides automated testing of JWST Calibration pipeline.  The table below shows the current tests implemented for each step
+of the pipeline.</p>
+<table border="1" class="docutils" id="id1">
+<caption><span class="caption-text">Pipeline Tests for CALDETECTOR1</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Pipeline Step</th>
+<th class="head">Test Name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Data Quality Initialization</td>
+<td><div class="first last line-block">
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestDQInitStep.test_pixeldq_ext_exists" title="test_pipeline.TestDQInitStep.test_pixeldq_ext_exists"><code class="xref py py-meth docutils literal"><span class="pre">test_pixeldq_ext_exists()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestDQInitStep.test_pixeldq_propagation" title="test_pipeline.TestDQInitStep.test_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_pixeldq_propagation()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestDQInitStep.test_groupdq_ext_exists" title="test_pipeline.TestDQInitStep.test_groupdq_ext_exists"><code class="xref py py-meth docutils literal"><span class="pre">test_groupdq_ext_exists()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero" title="test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero"><code class="xref py py-meth docutils literal"><span class="pre">test_groupdq_vals_all_zero()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestDQInitStep.test_err_ext_exists" title="test_pipeline.TestDQInitStep.test_err_ext_exists"><code class="xref py py-meth docutils literal"><span class="pre">test_err_ext_exists()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestDQInitStep.test_err_vals_all_zero" title="test_pipeline.TestDQInitStep.test_err_vals_all_zero"><code class="xref py py-meth docutils literal"><span class="pre">test_err_vals_all_zero()</span></code></a></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Saturation Check</td>
+<td><div class="first last line-block">
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestSaturationStep.test_saturation_groupdq_set" title="test_pipeline.TestSaturationStep.test_saturation_groupdq_set"><code class="xref py py-meth docutils literal"><span class="pre">test_saturation_groupdq_set()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation" title="test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_saturation_pixeldq_propagation()</span></code></a></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>IPC Deconvolution</td>
+<td><div class="first last line-block">
+<div class="line">no tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Error Initialization</td>
+<td><div class="first last line-block">
+<div class="line">no tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Superbias Subtraction</td>
+<td><div class="first last line-block">
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation" title="test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_superbias_pixeldq_propagation()</span></code></a></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Reference-Pixel Correction</td>
+<td><div class="first last line-block">
+<div class="line">no tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Reset-Anomaly Correction</td>
+<td><div class="first last line-block">
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestResetStep.test_reset_correction" title="test_pipeline.TestResetStep.test_reset_correction"><code class="xref py py-meth docutils literal"><span class="pre">test_reset_correction()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestResetStep.test_reset_pixeldq_propagation" title="test_pipeline.TestResetStep.test_reset_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_reset_pixeldq_propagation()</span></code></a></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Last-Frame Correction</td>
+<td><div class="first last line-block">
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestLastframeStep.test_lastframe_correction" title="test_pipeline.TestLastframeStep.test_lastframe_correction"><code class="xref py py-meth docutils literal"><span class="pre">test_lastframe_correction()</span></code></a></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Linearity</td>
+<td><div class="first last line-block">
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestLinearityStep.test_linearity_correction" title="test_pipeline.TestLinearityStep.test_linearity_correction"><code class="xref py py-meth docutils literal"><span class="pre">test_linearity_correction()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent" title="test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent"><code class="xref py py-meth docutils literal"><span class="pre">test_linearity_median_residuals_rms_lt_1percent()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent" title="test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent"><code class="xref py py-meth docutils literal"><span class="pre">test_linearity_99percent_of_residuals_rms_lt1percent()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation" title="test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_linearity_pixeldq_propagation()</span></code></a></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Dark Current</td>
+<td><div class="first last line-block">
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation" title="test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_dark_current_pixeldq_propagation()</span></code></a></div>
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction" title="test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction"><code class="xref py py-meth docutils literal"><span class="pre">test_dark_current_subtraction()</span></code></a></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Jump Detection</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Ramp Fitting</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils" id="id2">
+<caption><span class="caption-text">Pipeline and Tests for CALIMAGE2</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Pipeline Step</th>
+<th class="head">Test Name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Assign WCS</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Background Subtraction</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Telescope Emission</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Flat-Field Correction</td>
+<td><div class="first last line-block">
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestFlatFieldStep.test_flat_field_correction" title="test_pipeline.TestFlatFieldStep.test_flat_field_correction"><code class="xref py py-meth docutils literal"><span class="pre">test_flat_field_correction()</span></code></a></div>
+<div class="line"><code class="xref py py-meth docutils literal"><span class="pre">test_field_dq()</span></code></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Flux Calibration</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Rectify 2D Image</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils" id="id3">
+<caption><span class="caption-text">Pipeline and Tests for CALSPEC2</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Pipeline Step</th>
+<th class="head">Test Name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Assign WCS</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Background Subtraction</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Imprint Subtraction</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>MSA Failed-Open Flagging</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Subwindow Extraction</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Flat-Field Correction</td>
+<td><div class="first last line-block">
+<div class="line"><a class="reference internal" href="test.html#test_pipeline.TestFlatFieldStep.test_flat_field_correction" title="test_pipeline.TestFlatFieldStep.test_flat_field_correction"><code class="xref py py-meth docutils literal"><span class="pre">test_flat_field_correction()</span></code></a></div>
+<div class="line"><code class="xref py py-meth docutils literal"><span class="pre">test_field_dq()</span></code></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Stray-Light Subtraction</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Fringing Removal</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td>Path-Loss Correction</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td>Flux Calibration</td>
+<td><div class="first last line-block">
+<div class="line">No tests implemented</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#configuration-files">Configuration Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="test.html">Tests</a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Hill, Jesse Averbuhk.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

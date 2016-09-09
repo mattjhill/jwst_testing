@@ -1,0 +1,10 @@
+Introduction
+============
+
+ST_validate is essentially a wrapper for `py.test
+<http://doc.pytest.org/en/latest/>`_
+designed to be able to automatically test JWST Calibration pipeline data product for any of the instruments
+on JWST.  Py.test is a unit testing framework for Python so all of the tests are designed to be Pass/Fail, though
+more detailed reporting of testing metrics may available in the future.
+
+The current tests focus on verifying that the pipeline performs as described by SSB documentation.  Tests are also being developed to ensure that tests adhere to performance metrics defined by the instrument teams (e.g. :py:meth:`~test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent`)

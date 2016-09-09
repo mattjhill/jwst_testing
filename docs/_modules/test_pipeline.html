@@ -1,0 +1,768 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>test_pipeline &mdash; ST_Validate 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ST_Validate 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ST_Validate
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test.html">Tests</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">ST_Validate</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>test_pipeline</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for test_pipeline</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">fits</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="n">dq_dict</span> <span class="o">=</span> <span class="p">{</span>
+<span class="s1">&#39;DO_NOT_USE&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="s1">&#39;SATURATED&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="s1">&#39;JUMP_DET&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+<span class="s1">&#39;DROPOUT&#39;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+<span class="s1">&#39;RESERVED&#39;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span>     
+<span class="s1">&#39;RESERVED&#39;</span> <span class="p">:</span> <span class="mi">5</span><span class="p">,</span>     
+<span class="s1">&#39;RESERVED&#39;</span> <span class="p">:</span> <span class="mi">6</span><span class="p">,</span>     
+<span class="s1">&#39;RESERVED&#39;</span> <span class="p">:</span> <span class="mi">7</span><span class="p">,</span>     
+<span class="s1">&#39;UNRELIABLE_ERROR&#39;</span> <span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="s1">&#39;NON_SCIENCE&#39;</span> <span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+<span class="s1">&#39;DEAD&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+<span class="s1">&#39;HOT&#39;</span> <span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="s1">&#39;WARM&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+<span class="s1">&#39;LOW_QE&#39;</span> <span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+<span class="s1">&#39;RC&#39;</span> <span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+<span class="s1">&#39;TELEGRAPH&#39;</span> <span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+<span class="s1">&#39;NONLINEAR&#39;</span> <span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+<span class="s1">&#39;BAD_REF_PIXEL&#39;</span> <span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
+<span class="s1">&#39;NO_FLAT_FIELD&#39;</span> <span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+<span class="s1">&#39;NO_GAIN_VALUE&#39;</span> <span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+<span class="s1">&#39;NO_LIN_CORR&#39;</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+<span class="s1">&#39;NO_SAT_CHECK&#39;</span> <span class="p">:</span> <span class="mi">21</span><span class="p">,</span>
+<span class="s1">&#39;UNRELIABLE_BIAS&#39;</span> <span class="p">:</span> <span class="mi">22</span><span class="p">,</span>
+<span class="s1">&#39;UNRELIABLE_DARK&#39;</span> <span class="p">:</span> <span class="mi">23</span><span class="p">,</span>
+<span class="s1">&#39;UNRELIABLE_SLOPE&#39;</span> <span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+<span class="s1">&#39;UNRELIABLE_FLAT&#39;</span> <span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+<span class="s1">&#39;OPEN&#39;</span> <span class="p">:</span> <span class="mi">26</span><span class="p">,</span>
+<span class="s1">&#39;ADJ_OPEN&#39;</span> <span class="p">:</span> <span class="mi">27</span><span class="p">,</span>
+<span class="s1">&#39;UNRELIABLE_RESET&#39;</span> <span class="p">:</span> <span class="mi">28</span><span class="p">,</span>
+<span class="s1">&#39;MSA_FAILED_OPEN&#39;</span> <span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
+<span class="s1">&#39;OTHER_BAD_PIXEL&#39;</span> <span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">bitwise_propagate</span><span class="p">(</span><span class="n">refhdu</span><span class="p">,</span> <span class="n">pixeldq</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;DQ_DEF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># find which pixels have the bit set</span>
+            <span class="n">flagged</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">right_shift</span><span class="p">(</span><span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;DQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;BIT&#39;</span><span class="p">])))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+            <span class="c1"># shift them to the correct bit for PIXELDQ</span>
+            <span class="n">flagged</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">left_shift</span><span class="p">(</span><span class="n">flagged</span><span class="p">,</span> <span class="n">dq_dict</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;NAME&#39;</span><span class="p">]])</span>
+            <span class="c1"># propagate into the PIXELDQ extension</span>
+            <span class="n">pixeldq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">(</span><span class="n">pixeldq</span><span class="p">,</span> <span class="n">flagged</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;No DQ mnemonic &quot;</span><span class="o">+</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;NAME&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">pixeldq</span>
+
+
+<span class="nd">@pytest.mark.dq_init</span>
+<div class="viewcode-block" id="TestDQInitStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestDQInitStep">[docs]</a><span class="k">class</span> <span class="nc">TestDQInitStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing the Data Quality Initialization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@pytest.fixture</span>
+    <span class="k">def</span> <span class="nf">refhdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dq_init_hdu</span><span class="p">):</span>
+        <span class="n">CRDS</span> <span class="o">=</span> <span class="s1">&#39;/grp/crds/cache/references/jwst/&#39;</span>
+        <span class="n">ref_file</span> <span class="o">=</span> <span class="n">CRDS</span><span class="o">+</span><span class="n">dq_init_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;R_MASK&#39;</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ref_file</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestDQInitStep.test_pixeldq_ext_exists"><a class="viewcode-back" href="../test.html#test_pipeline.TestDQInitStep.test_pixeldq_ext_exists">[docs]</a>    <span class="k">def</span> <span class="nf">test_pixeldq_ext_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dq_init_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that the PIXELDQ extension has been added to the output HDUList.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span><span class="p">(</span><span class="s2">&quot;PIXELDQ&quot;</span> <span class="ow">in</span> <span class="n">dq_init_hdu</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestDQInitStep.test_pixeldq_propagation"><a class="viewcode-back" href="../test.html#test_pipeline.TestDQInitStep.test_pixeldq_propagation">[docs]</a>    <span class="k">def</span> <span class="nf">test_pixeldq_propagation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dq_init_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that all DQ flags are propagated from the reference file (header keyword </span>
+<span class="sd">        R_MASK) to the output PIXELDQ array.</span>
+
+<span class="sd">        .. table:: Supported Flags</span>
+
+<span class="sd">            +-----+-------+---------------+---------------------------------------------+</span>
+<span class="sd">            | Bit | Value | Name          | Description                                 |</span>
+<span class="sd">            +=====+=======+===============+=============================================+</span>
+<span class="sd">            | 0   | 1     | DO_NOT_USE    | Bad pixel.                                  |</span>
+<span class="sd">            +-----+-------+---------------+---------------------------------------------+</span>
+<span class="sd">            | 1   | 2     | NON_SCIENCE   | Pixel not on science portion of detector    |</span>
+<span class="sd">            +-----+-------+---------------+---------------------------------------------+</span>
+<span class="sd">            | 2   | 4     | DEAD          | Dead pixel                                  |</span>
+<span class="sd">            +-----+-------+---------------+---------------------------------------------+</span>
+<span class="sd">            | 3   | 8     | LOW_QE        | Low quantum efficiency                      |</span>
+<span class="sd">            +-----+-------+---------------+---------------------------------------------+</span>
+<span class="sd">            | 4   | 16    | NO_GAIN_VALUE | Gain cannot be measured                     |</span>
+<span class="sd">            +-----+-------+---------------+---------------------------------------------+</span>
+<span class="sd">            | 5   | 32    | OPEN          | open Pixel (counts move to adjacent pixels) |</span>
+<span class="sd">            +-----+-------+---------------+---------------------------------------------+</span>
+<span class="sd">            | 6   | 64    | ADJ_OPEN      | Adjacent to open pixel                      |</span>
+<span class="sd">            +-----+-------+---------------+---------------------------------------------+</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">input_dq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dq_init_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">bitwise_propagate</span><span class="p">(</span><span class="n">refhdu</span><span class="p">,</span> <span class="n">input_dq</span><span class="p">)</span> <span class="o">==</span> <span class="n">dq_init_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestDQInitStep.test_groupdq_ext_exists"><a class="viewcode-back" href="../test.html#test_pipeline.TestDQInitStep.test_groupdq_ext_exists">[docs]</a>    <span class="k">def</span> <span class="nf">test_groupdq_ext_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dq_init_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that the GROUPDQ extension has been added to the output HDUList.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="s2">&quot;GROUPDQ&quot;</span> <span class="ow">in</span> <span class="n">dq_init_hdu</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestDQInitStep.test_groupdq_vals_all_zero"><a class="viewcode-back" href="../test.html#test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero">[docs]</a>    <span class="k">def</span> <span class="nf">test_groupdq_vals_all_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dq_init_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that the GROUPDQ array values are all initialized to zero.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dq_init_hdu</span><span class="p">[</span><span class="s2">&quot;GROUPDQ&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TestDQInitStep.test_err_ext_exists"><a class="viewcode-back" href="../test.html#test_pipeline.TestDQInitStep.test_err_ext_exists">[docs]</a>    <span class="k">def</span> <span class="nf">test_err_ext_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dq_init_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that the ERR extension has been added to the output HDUList.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="s2">&quot;ERR&quot;</span> <span class="ow">in</span> <span class="n">dq_init_hdu</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestDQInitStep.test_err_vals_all_zero"><a class="viewcode-back" href="../test.html#test_pipeline.TestDQInitStep.test_err_vals_all_zero">[docs]</a>    <span class="k">def</span> <span class="nf">test_err_vals_all_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dq_init_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that the ERR array values are all initialized to zero.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dq_init_hdu</span><span class="p">[</span><span class="s2">&quot;ERR&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span></div></div>
+
+<span class="nd">@pytest.mark.saturation</span>
+<div class="viewcode-block" id="TestSaturationStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestSaturationStep">[docs]</a><span class="k">class</span> <span class="nc">TestSaturationStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing Saturation Check.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@pytest.fixture</span>
+    <span class="k">def</span> <span class="nf">refhdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sat_hdu</span><span class="p">):</span>
+        <span class="n">CRDS</span> <span class="o">=</span> <span class="s1">&#39;/grp/crds/cache/references/jwst/&#39;</span>
+        <span class="n">ref_file</span> <span class="o">=</span> <span class="n">CRDS</span><span class="o">+</span><span class="n">sat_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;R_SATURA&#39;</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ref_file</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestSaturationStep.test_saturation_groupdq_set"><a class="viewcode-back" href="../test.html#test_pipeline.TestSaturationStep.test_saturation_groupdq_set">[docs]</a>    <span class="k">def</span> <span class="nf">test_saturation_groupdq_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sat_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that for each group in the science data file, if the pixel exceeds the </span>
+<span class="sd">        saturation level, then the SATURATED flag is set for that pixel in the </span>
+<span class="sd">        corresponding plane of the GROUPDQ array – and in all subsequent planes.  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;DQ&#39;</span> <span class="ow">in</span> <span class="n">refhdu</span><span class="p">:</span>
+            <span class="n">flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">sat_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;=</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> 
+                <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;DQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="n">flag</span> <span class="o">=</span> <span class="n">sat_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">expected_groupdq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">sat_hdu</span><span class="p">[</span><span class="s1">&#39;GROUPDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">expected_groupdq</span><span class="p">[</span><span class="n">flag</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        
+        <span class="c1">#now make sure that pixels in groups after a flagged pixel are also flagged</span>
+        <span class="n">flag</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">expected_groupdq</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">expected_groupdq</span><span class="p">[</span><span class="n">flag</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> 
+
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sat_hdu</span><span class="p">[</span><span class="s1">&#39;GROUPDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">expected_groupdq</span><span class="p">)</span></div>
+
+    <span class="nd">@pytest.mark.dq_init</span>
+<div class="viewcode-block" id="TestSaturationStep.test_saturation_pixeldq_propagation"><a class="viewcode-back" href="../test.html#test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation">[docs]</a>    <span class="k">def</span> <span class="nf">test_saturation_pixeldq_propagation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sat_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">dq_init_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that all DQ flags are propagated from the reference file </span>
+<span class="sd">        (header keyword R_SATURA) to the output PIXELDQ array.</span>
+
+<span class="sd">        .. table:: Supported Flags</span>
+
+<span class="sd">            +-----+-------+---------------+--------------------------------+</span>
+<span class="sd">            | Bit | Value | Name          | Description                    |</span>
+<span class="sd">            +=====+=======+===============+================================+</span>
+<span class="sd">            | 0   | 1     | DO_NOT_USE    | Bad pixel.                     |</span>
+<span class="sd">            +-----+-------+---------------+--------------------------------+</span>
+<span class="sd">            | 1   | 2     | NO_SAT_CHECK  | Saturation check not available |</span>
+<span class="sd">            +-----+-------+---------------+--------------------------------+</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">bitwise_propagate</span><span class="p">(</span><span class="n">refhdu</span><span class="p">,</span> <span class="n">dq_init_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">sat_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+<span class="nd">@pytest.mark.ipc</span>
+<div class="viewcode-block" id="TestIPCStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestIPCStep">[docs]</a><span class="k">class</span> <span class="nc">TestIPCStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing IPC Deconvolution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@pytest.fixture</span>
+    <span class="k">def</span> <span class="nf">refhdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ipc_hdu</span><span class="p">):</span>
+        <span class="n">CRDS</span> <span class="o">=</span> <span class="s1">&#39;/grp/crds/cache/references/jwst/&#39;</span>
+        <span class="n">ref_file</span> <span class="o">=</span> <span class="n">CRDS</span><span class="o">+</span><span class="n">sat_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;R_IPC&#39;</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ref_file</span><span class="p">)</span></div>
+
+<span class="nd">@pytest.mark.superbias</span>
+<div class="viewcode-block" id="TestSuperbiasStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestSuperbiasStep">[docs]</a><span class="k">class</span> <span class="nc">TestSuperbiasStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing Superbias Subtraction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@pytest.fixture</span>
+    <span class="k">def</span> <span class="nf">refhdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbias_hdu</span><span class="p">):</span>
+        <span class="n">CRDS</span> <span class="o">=</span> <span class="s1">&#39;/grp/crds/cache/references/jwst/&#39;</span>
+        <span class="n">ref_file</span> <span class="o">=</span> <span class="n">CRDS</span><span class="o">+</span><span class="n">superbias_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;R_SUPERB&#39;</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ref_file</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestSuperbiasStep.test_superbias_subtraction"><a class="viewcode-back" href="../test.html#test_pipeline.TestSuperbiasStep.test_superbias_subtraction">[docs]</a>    <span class="k">def</span> <span class="nf">test_superbias_subtraction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbias_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">sat_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that superbias is subtracted from each group in the image array, including </span>
+<span class="sd">        reference pixels.  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check</span> <span class="o">=</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;DQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">sat_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">check</span><span class="p">]</span> <span class="o">-</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">check</span><span class="p">],</span> <span class="n">superbias_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">check</span><span class="p">])</span></div>
+
+    <span class="nd">@pytest.mark.saturation</span>
+<div class="viewcode-block" id="TestSuperbiasStep.test_superbias_pixeldq_propagation"><a class="viewcode-back" href="../test.html#test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation">[docs]</a>    <span class="k">def</span> <span class="nf">test_superbias_pixeldq_propagation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">superbias_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">sat_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that all DQ flags are propagated from the reference file </span>
+<span class="sd">        (header keyword R_SUPERB) to the output PIXELDQ array.</span>
+
+<span class="sd">        .. table:: Supported Flags</span>
+
+<span class="sd">            +-----+-------+-----------------+---------------------+</span>
+<span class="sd">            | Bit | Value | Name            | Description         |</span>
+<span class="sd">            +=====+=======+=================+=====================+</span>
+<span class="sd">            | 0   | 1     | DO_NOT_USE      | Bad pixel.          |</span>
+<span class="sd">            +-----+-------+-----------------+---------------------+</span>
+<span class="sd">            | 1   | 2     | UNRELIABLE_BIAS | Bias variance large |</span>
+<span class="sd">            +-----+-------+-----------------+---------------------+</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">bitwise_propagate</span><span class="p">(</span><span class="n">refhdu</span><span class="p">,</span> <span class="n">sat_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">superbias_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+<span class="nd">@pytest.mark.refpix</span>
+<div class="viewcode-block" id="TestRefpixStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestRefpixStep">[docs]</a><span class="k">class</span> <span class="nc">TestRefpixStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing Reference-Pixel Correction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@pytest.fixture</span>
+    <span class="k">def</span> <span class="nf">refhdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refpix_hdu</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;R_REFPIX&#39;</span> <span class="ow">in</span> <span class="n">refpix_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">:</span>
+            <span class="n">CRDS</span> <span class="o">=</span> <span class="s1">&#39;/grp/crds/cache/references/jwst/&#39;</span>
+            <span class="n">ref_file</span> <span class="o">=</span> <span class="n">CRDS</span><span class="o">+</span><span class="n">superbias_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;R_REFPIX&#39;</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
+            <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ref_file</span><span class="p">)</span></div>
+
+<span class="nd">@pytest.mark.reset</span>
+<div class="viewcode-block" id="TestResetStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestResetStep">[docs]</a><span class="k">class</span> <span class="nc">TestResetStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing the Reset-Anomaly Correction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@pytest.fixture</span>
+    <span class="k">def</span> <span class="nf">refhdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset_hdu</span><span class="p">):</span>
+        <span class="n">CRDS</span> <span class="o">=</span> <span class="s1">&#39;/grp/crds/cache/references/jwst/&#39;</span>
+        <span class="n">ref_file</span> <span class="o">=</span> <span class="n">CRDS</span><span class="o">+</span><span class="n">reset_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;R_RESET&#39;</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ref_file</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestResetStep.test_reset_correction"><a class="viewcode-back" href="../test.html#test_pipeline.TestResetStep.test_reset_correction">[docs]</a>    <span class="k">def</span> <span class="nf">test_reset_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refpix_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">reset_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that for each integration in the input science data, the </span>
+<span class="sd">        reset corrections are subtracted, group by group, integration </span>
+<span class="sd">        by integration. If the input science data contains more groups </span>
+<span class="sd">        than the reset correction, then the correction for subsequent </span>
+<span class="sd">        groups is zero. If the input science data contains more </span>
+<span class="sd">        integrations than the reset correction, then the correction </span>
+<span class="sd">        corresponding to the final integration in the reset file is used. </span>
+<span class="sd">        Only performed for MIRI data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nints</span><span class="p">,</span> <span class="n">ngroups</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">reset_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">nints</span><span class="p">,</span> <span class="n">ngroups</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nints</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ngroups</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">refpix_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">g</span><span class="p">,:,:]</span> <span class="o">-</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">g</span><span class="p">,:,:],</span> <span class="n">reset_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">g</span><span class="p">,:,:]))</span>
+                <span class="k">elif</span> <span class="n">g</span> <span class="o">&gt;=</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">refpix_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">g</span><span class="p">,:,:],</span> <span class="n">reset_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">g</span><span class="p">,:,:]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">refpix_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">g</span><span class="p">,:,:]</span> <span class="o">-</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">g</span><span class="p">,:,:],</span> <span class="n">reset_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">g</span><span class="p">,:,:]))</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">results</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestResetStep.test_reset_pixeldq_propagation"><a class="viewcode-back" href="../test.html#test_pipeline.TestResetStep.test_reset_pixeldq_propagation">[docs]</a>    <span class="k">def</span> <span class="nf">test_reset_pixeldq_propagation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refpix_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">reset_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that all DQ flags are propagated from the reference file (header keyword </span>
+<span class="sd">        R_RESET) to the output PIXELDQ array.</span>
+
+<span class="sd">        .. table:: Supported Flags</span>
+
+<span class="sd">            +-----+-------+------------------+----------------------------+</span>
+<span class="sd">            | Bit | Value | Name             | Description                |</span>
+<span class="sd">            +=====+=======+==================+============================+</span>
+<span class="sd">            | 0   | 1     | DO_NOT_USE       | Bad pixel.                 |</span>
+<span class="sd">            +-----+-------+------------------+----------------------------+</span>
+<span class="sd">            | 1   | 2     | UNRELIABLE_RESET | Sensitive to reset anomaly |</span>
+<span class="sd">            +-----+-------+------------------+----------------------------+</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">bitwise_propagate</span><span class="p">(</span><span class="n">refhdu</span><span class="p">,</span> <span class="n">refpix_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">reset_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestLastframeStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestLastframeStep">[docs]</a><span class="k">class</span> <span class="nc">TestLastframeStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing Last-Frame Correction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@pytest.fixture</span>
+    <span class="k">def</span> <span class="nf">refhdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lastframe_hdu</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">lastframe_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;INSTRUME&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;MIRI&#39;</span><span class="p">:</span>
+            <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">()</span>
+
+        <span class="n">CRDS</span> <span class="o">=</span> <span class="s1">&#39;/grp/crds/cache/references/jwst/&#39;</span>
+        <span class="n">ref_file</span> <span class="o">=</span> <span class="n">CRDS</span><span class="o">+</span><span class="n">lastframe_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;R_LASTFR&#39;</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ref_file</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestLastframeStep.test_lastframe_correction"><a class="viewcode-back" href="../test.html#test_pipeline.TestLastframeStep.test_lastframe_correction">[docs]</a>    <span class="k">def</span> <span class="nf">test_lastframe_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">lastframe_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that the values in the SCI extension of the last-frame reference file are </span>
+<span class="sd">        subtracted from the final frame of the science exposure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">reset_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">expected</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,:]</span> <span class="o">-=</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">lastframe_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+<span class="nd">@pytest.mark.linearity</span>
+<div class="viewcode-block" id="TestLinearityStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestLinearityStep">[docs]</a><span class="k">class</span> <span class="nc">TestLinearityStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing the Linearity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;class&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">refhdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linearity_hdu</span><span class="p">):</span>
+        <span class="n">CRDS</span> <span class="o">=</span> <span class="s1">&#39;/grp/crds/cache/references/jwst/&#39;</span>
+        <span class="n">ref_file</span> <span class="o">=</span> <span class="n">CRDS</span><span class="o">+</span><span class="n">linearity_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;R_LINEAR&#39;</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ref_file</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestLinearityStep.test_linearity_correction"><a class="viewcode-back" href="../test.html#test_pipeline.TestLinearityStep.test_linearity_correction">[docs]</a>    <span class="k">def</span> <span class="nf">test_linearity_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linearity_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">lastframe_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that the linearity correction is properly applied to all relevant pixels. The algorithm </span>
+<span class="sd">        uses a polynomial of the form</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            F_c = \sum_{i=0}^N C_i F^i</span>
+<span class="sd">        </span>
+<span class="sd">        where :math:`F_c` is the corrected counts, :math:`C` are the correction coefficients, and :math:`F` </span>
+<span class="sd">        is the uncorrected counts.  The coefficients of the polynomial at each pixel are given by the </span>
+<span class="sd">        reference file.        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># ignore pixels which are saturated (GROUPDQ = 2) or NO_LIN_CORR (DQ = 2)</span>
+        <span class="n">corrected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">lastframe_hdu</span><span class="p">[</span><span class="s1">&#39;GROUPDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;DQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span>
+        
+        <span class="n">linearity_applied</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;COEFFS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">lastframe_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)[</span><span class="n">corrected</span><span class="p">],</span> 
+            <span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">corrected</span><span class="p">])</span>
+
+        <span class="n">linearity_ignored</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">lastframe_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">corrected</span><span class="p">],</span> 
+            <span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">corrected</span><span class="p">])</span>
+
+        <span class="c1"># make sure that the values linearity correction is properly applied to relevant pixels</span>
+        <span class="c1"># and ignored elsewhere</span>
+        <span class="k">assert</span> <span class="n">linearity_applied</span> <span class="ow">and</span> <span class="n">linearity_ignored</span></div>
+
+    <span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;class&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_percent_rms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linearity_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the percent rms after fitting a line to the linearity corrected</span>
+<span class="sd">        ramps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nints</span><span class="p">,</span> <span class="n">ngroups</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">pixeldq</span> <span class="o">=</span> <span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nints</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nints</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">groupdq</span> <span class="o">=</span> <span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;GROUPDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndenumerate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">500</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+                <span class="n">usable</span> <span class="o">=</span> <span class="n">groupdq</span><span class="p">[:,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="n">residuals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">groupdq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">usable</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">pixeldq</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># make sure there are atleast 4 unsaturated groups</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="n">usable</span><span class="p">],</span> <span class="n">data</span><span class="p">[:,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">][</span><span class="n">usable</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">groups</span><span class="p">[</span><span class="n">usable</span><span class="p">])</span> <span class="o">-</span> <span class="n">data</span><span class="p">[:,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">][</span><span class="n">usable</span><span class="p">]</span>
+                    <span class="c1">#residuals[usable] = res</span>
+                    <span class="n">rms</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">][</span><span class="n">usable</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span>
+
+        <span class="k">return</span> <span class="n">rms</span>
+
+<div class="viewcode-block" id="TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent"><a class="viewcode-back" href="../test.html#test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent">[docs]</a>    <span class="k">def</span> <span class="nf">test_linearity_median_residuals_rms_lt_1percent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_percent_rms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that after the linearity correction the ramps agree with a linear </span>
+<span class="sd">        fit to an percent RMS of less than 1%.</span>
+<span class="sd">        Where</span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+<span class="sd">            \%RMS = \\frac{F - F_c}{\max{F_c}} * 100</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">good</span> <span class="o">=</span> <span class="n">_percent_rms</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">_percent_rms</span><span class="p">[</span><span class="n">good</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1.</span></div>
+
+<div class="viewcode-block" id="TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent"><a class="viewcode-back" href="../test.html#test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent">[docs]</a>    <span class="k">def</span> <span class="nf">test_linearity_99percent_of_residuals_rms_lt1percent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_percent_rms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that more than 99% of pixels&#39; residuals have percent RMS &lt; 1%.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">good</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">_percent_rms</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">_percent_rms</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">_percent_rms</span><span class="p">[</span><span class="n">good</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1.</span><span class="p">))</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">_percent_rms</span><span class="p">[</span><span class="n">good</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">99.</span></div>
+
+    <span class="nd">@pytest.mark.lastframe</span>
+<div class="viewcode-block" id="TestLinearityStep.test_linearity_pixeldq_propagation"><a class="viewcode-back" href="../test.html#test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation">[docs]</a>    <span class="k">def</span> <span class="nf">test_linearity_pixeldq_propagation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linearity_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">lastframe_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that all DQ flags are propagated from the reference file (header keyword </span>
+<span class="sd">        R_LINEAR) to the output PIXELDQ array.</span>
+
+<span class="sd">        .. table:: Supported Flags</span>
+
+<span class="sd">            +-----+-------+------------------+-----------------------------------------+</span>
+<span class="sd">            | Bit | Value | Name             | Description                             |</span>
+<span class="sd">            +=====+=======+==================+=========================================+</span>
+<span class="sd">            | 0   | 1     | DO_NOT_USE       | Bad pixel.                              |</span>
+<span class="sd">            +-----+-------+------------------+-----------------------------------------+</span>
+<span class="sd">            | 1   | 2     | NONLINEAR        | Pixel highly nonlinear.                 |</span>
+<span class="sd">            +-----+-------+------------------+-----------------------------------------+</span>
+<span class="sd">            | 2   | 4     | NO_LIN_CORR      | Linearity correction not available.     |</span>
+<span class="sd">            +-----+-------+------------------+-----------------------------------------+</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">bitwise_propagate</span><span class="p">(</span><span class="n">refhdu</span><span class="p">,</span> <span class="n">lastframe_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;DQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span></div></div>
+
+<span class="nd">@pytest.mark.dark_current</span>
+<div class="viewcode-block" id="TestDarkCurrentStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestDarkCurrentStep">[docs]</a><span class="k">class</span> <span class="nc">TestDarkCurrentStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing the Dark Current Subtraction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@pytest.fixture</span>
+    <span class="k">def</span> <span class="nf">refhdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dark_current_hdu</span><span class="p">):</span>
+        <span class="n">CRDS</span> <span class="o">=</span> <span class="s1">&#39;/grp/crds/cache/references/jwst/&#39;</span>
+        <span class="n">ref_file</span> <span class="o">=</span> <span class="n">CRDS</span><span class="o">+</span><span class="n">dark_current_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;R_DARK&#39;</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ref_file</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestDarkCurrentStep.test_dark_current_subtraction"><a class="viewcode-back" href="../test.html#test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction">[docs]</a>    <span class="k">def</span> <span class="nf">test_dark_current_subtraction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dark_current_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">linearity_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The Dark Current step can use reference files with one of two formats:  If the reference </span>
+<span class="sd">        file contains a ramp with NFRAMES=1 and GROUPGAP=0, then the program averages and skips dark </span>
+<span class="sd">        frames to match the NFRAMES and GROUPGAP values of the science data, before performing a </span>
+<span class="sd">        group-by-group subtraction of the dark-reference ramp from the science data.  To speed </span>
+<span class="sd">        processing, if the reference file has NFRAMES and GROUPGAP values that match those of the </span>
+<span class="sd">        data file, then the ramp will be subtracted as is, without additional averaging.  If the </span>
+<span class="sd">        dark ramp has more groups than the science image, the extra dark groups are ignored.  If </span>
+<span class="sd">        the dark ramp has fewer groups than the science image, the Dark Current step will issue a </span>
+<span class="sd">        warning and return the science image unchanged.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">nframes</span> <span class="o">=</span> <span class="n">dark_current_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;NFRAMES&#39;</span><span class="p">]</span>
+        <span class="n">groupgap</span> <span class="o">=</span> <span class="n">dark_current_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;GROUPGAP&#39;</span><span class="p">]</span>
+        <span class="n">nints</span><span class="p">,</span> <span class="n">ngroups</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">dark_current_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">nframes_tot</span> <span class="o">=</span> <span class="p">(</span><span class="n">nframes</span><span class="o">+</span><span class="n">groupgap</span><span class="p">)</span><span class="o">*</span><span class="n">ngroups</span>
+        <span class="k">if</span> <span class="n">nframes_tot</span> <span class="o">&gt;</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="c1"># data should remain unchanged if there are more frames in the </span>
+            <span class="c1"># science data than the reference file</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">dark_current_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dark_correct</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nframes</span><span class="p">,</span> <span class="n">ngroups</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">))</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="n">nframes_tot</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nframes</span><span class="p">):</span>
+                <span class="n">dark_correct</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">::(</span><span class="n">nframes</span><span class="o">+</span><span class="n">groupgap</span><span class="p">),:,:]</span>
+
+            <span class="n">dark_correct</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">dark_correct</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">dark_correct</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dark_current_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestDarkCurrentStep.test_dark_current_pixeldq_propagation"><a class="viewcode-back" href="../test.html#test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation">[docs]</a>    <span class="k">def</span> <span class="nf">test_dark_current_pixeldq_propagation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dark_current_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">linearity_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that all DQ flags are propagated from the reference file (header keyword </span>
+<span class="sd">        R_DARK) to the output PIXELDQ array.</span>
+
+<span class="sd">        .. table:: Supported Flags</span>
+
+<span class="sd">            +-----+-------+------------------+----------------------+</span>
+<span class="sd">            | Bit | Value | Name             | Description          |</span>
+<span class="sd">            +=====+=======+==================+======================+</span>
+<span class="sd">            | 0   | 1     | DO_NOT_USE       | Bad pixel.           |</span>
+<span class="sd">            +-----+-------+------------------+----------------------+</span>
+<span class="sd">            | 1   | 2     | HOT              | Hot Pixel.           |</span>
+<span class="sd">            +-----+-------+------------------+----------------------+</span>
+<span class="sd">            | 2   | 4     | WARM             | Warm pixel           |</span>
+<span class="sd">            +-----+-------+------------------+----------------------+</span>
+<span class="sd">            | 3   | 8     | UNRELIABLE_DARK  | Dark variance large  |</span>
+<span class="sd">            +-----+-------+------------------+----------------------+</span>
+<span class="sd">            | 4   | 16    | UNRELIABLE_SLOPE | Slope variance large |</span>
+<span class="sd">            +-----+-------+------------------+----------------------+</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nframes</span> <span class="o">=</span> <span class="n">dark_current_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;NFRAMES&#39;</span><span class="p">]</span>
+        <span class="n">groupgap</span> <span class="o">=</span> <span class="n">dark_current_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;GROUPGAP&#39;</span><span class="p">]</span>
+        <span class="n">nints</span><span class="p">,</span> <span class="n">ngroups</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">dark_current_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">nframes_tot</span> <span class="o">=</span> <span class="p">(</span><span class="n">nframes</span><span class="o">+</span><span class="n">groupgap</span><span class="p">)</span><span class="o">*</span><span class="n">ngroups</span>
+        <span class="k">if</span> <span class="n">nframes_tot</span> <span class="o">&gt;</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">dark_current_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">bitwise_propagate</span><span class="p">(</span><span class="n">refhdu</span><span class="p">,</span> <span class="n">linearity_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">dark_current_hdu</span><span class="p">[</span><span class="s1">&#39;PIXELDQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="TestJumpStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestJumpStep">[docs]</a><span class="k">class</span> <span class="nc">TestJumpStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing Jump Detection.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="TestRampFitStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestRampFitStep">[docs]</a><span class="k">class</span> <span class="nc">TestRampFitStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing Ramp Fitting.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+<span class="c1">##############################################################################</span>
+<span class="c1">################################# 2B steps ###################################</span>
+<span class="c1">##############################################################################</span>
+
+<span class="nd">@pytest.mark.assign_wcs</span>
+<div class="viewcode-block" id="TestAssignWCSStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestAssignWCSStep">[docs]</a><span class="k">class</span> <span class="nc">TestAssignWCSStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing the assign_wcs step</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+<span class="nd">@pytest.mark.flat_field</span>
+<div class="viewcode-block" id="TestFlatFieldStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestFlatFieldStep">[docs]</a><span class="k">class</span> <span class="nc">TestFlatFieldStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing the flat_field step</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@pytest.fixture</span>
+    <span class="k">def</span> <span class="nf">refhdu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flat_field_hdu</span><span class="p">):</span>
+        <span class="n">CRDS</span> <span class="o">=</span> <span class="s1">&#39;/grp/crds/cache/references/jwst/&#39;</span>
+        <span class="n">ref_file</span> <span class="o">=</span> <span class="n">CRDS</span><span class="o">+</span><span class="n">flat_field_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;R_FLAT&#39;</span><span class="p">][</span><span class="mi">7</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ref_file</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestFlatFieldStep.test_flat_field_correction"><a class="viewcode-back" href="../test.html#test_pipeline.TestFlatFieldStep.test_flat_field_correction">[docs]</a>    <span class="k">def</span> <span class="nf">test_flat_field_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flat_field_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">assign_wcs_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that the flat field correction is applied properly to the input file.</span>
+<span class="sd">        The flat correction should divide the input data by the matching pixel values in the </span>
+<span class="sd">        reference file unless they are flagged in reference file DQ extension.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;DQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">expected_flat</span> <span class="o">=</span> <span class="n">assign_wcs_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">expected_flat</span><span class="p">[</span><span class="n">correct</span><span class="p">]</span> <span class="o">=</span> <span class="n">assign_wcs_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">correct</span><span class="p">]</span><span class="o">/</span><span class="n">refhdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">correct</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">flat_field_hdu</span><span class="p">[</span><span class="s1">&#39;SCI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>  <span class="o">==</span> <span class="n">expected_flat</span><span class="p">)</span></div>
+
+    <span class="nd">@pytest.mark.xfail</span>
+<div class="viewcode-block" id="TestFlatFieldStep.test_flat_field_dq"><a class="viewcode-back" href="../test.html#test_pipeline.TestFlatFieldStep.test_flat_field_dq">[docs]</a>    <span class="k">def</span> <span class="nf">test_flat_field_dq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flat_field_hdu</span><span class="p">,</span> <span class="n">refhdu</span><span class="p">,</span> <span class="n">assign_wcs_hdu</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        check that proper Data quality flags are added according to the reference file.</span>
+
+<span class="sd">        NOTE: This fails in build 6.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">bitwise_propagate</span><span class="p">(</span><span class="n">refhdu</span><span class="p">,</span> <span class="n">assign_wcs_hdu</span><span class="p">[</span><span class="s1">&#39;DQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">flat_field_hdu</span><span class="p">[</span><span class="s1">&#39;DQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<span class="nd">@pytest.mark.persistence</span>
+<div class="viewcode-block" id="TestPersistenceStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestPersistenceStep">[docs]</a><span class="k">class</span> <span class="nc">TestPersistenceStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing the persistence step</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+<span class="nd">@pytest.mark.emission</span>
+<div class="viewcode-block" id="TestEmissionStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestEmissionStep">[docs]</a><span class="k">class</span> <span class="nc">TestEmissionStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing the emission step</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+<span class="nd">@pytest.mark.photom</span>
+<div class="viewcode-block" id="TestPhotomStep"><a class="viewcode-back" href="../test.html#test_pipeline.TestPhotomStep">[docs]</a><span class="k">class</span> <span class="nc">TestPhotomStep</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base class for testing the photom step</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Matthew Hill, Jesse Averbuhk.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
