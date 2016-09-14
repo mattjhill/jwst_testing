@@ -3,6 +3,7 @@ import numpy as np
 import unittest
 import pytest
 import os
+from .chapters import ReportChapter
 
 dq_dict = {
 'DO_NOT_USE' : 0,
@@ -51,6 +52,20 @@ def bitwise_propagate(refhdu, pixeldq):
             print("No DQ mnemonic "+row['NAME'])
     return pixeldq
 
+@pytest.fixture(scope="module")
+def toctree(request):
+    index = ReportChapter("JWST Calibration Pipeline Validation Testing Report")
+    index.add_text(".. toctree::"+'\n\t'+":maxdepth: 2")
+    def cleanup():
+        if pytest.config.getoption("--gen_report"):
+            curdir = os.getcwd()
+            config_dir = os.path.dirname(request.config.getoption("--config_file"))
+            os.chdir(config_dir)
+            index.write("source/index.rst")
+            os.chdir(curdir)
+
+    request.addfinalizer(cleanup)
+    return index
 
 class TestDQInitStep:
     """
@@ -185,7 +200,23 @@ class TestSaturationStep:
         ref_file = CRDS+output_file[0].header['R_SATURA'][7:]
         return fits.open(ref_file)
 
-    def test_saturation_groupdq_set(self, output_file, refhdu):
+    @pytest.fixture(scope="class")
+    def chapter(self, request, toctree):
+        chapter = ReportChapter("Saturation")
+
+        def cleanup():
+            if pytest.config.getoption("--gen_report"):
+                curdir = os.getcwd()
+                config_dir = os.path.dirname(request.config.getoption("--config_file"))
+                os.chdir(config_dir)
+                chapter.write("source/saturation.rst")
+                toctree.add_text('\t'+"saturation", extra_newline=False)
+                os.chdir(curdir)
+
+        request.addfinalizer(cleanup)
+        return chapter
+
+    def test_saturation_groupdq_set(self, output_file, refhdu, chapter):
         """
         Check that for each group in the science data file, if the pixel exceeds the 
         saturation level, then the SATURATED flag is set for that pixel in the 
@@ -204,7 +235,15 @@ class TestSaturationStep:
         flag = (np.cumsum(expected_groupdq == 2, axis=1) > 0)
         expected_groupdq[flag] = 2 
 
-        assert np.all(output_file['GROUPDQ'].data == expected_groupdq)
+        result = np.all(output_file['GROUPDQ'].data == expected_groupdq)
+        if pytest.config.getoption("--gen_report"):
+            chapter.add_subsection("Saturation Flag Check")
+
+            description = "If the pixel value is higher than the saturation level determined by the reference file it should have its GROUPDQ value changed to 2 along with all subsequent pixels in the integration, unless it's PIXELDQ is flagged as NO_SAT_CHECK or it has a value of NaN.  We check that these flags are correctly set."
+            chapter.add_text(description)
+            if result:
+                chapter.add_text(":py:meth:`test_saturation_groupdq_set` PASSED")
+        assert result
 
     @pytest.mark.dq_init
     def test_saturation_pixeldq_propagation(self, output_file, refhdu, input_file):
