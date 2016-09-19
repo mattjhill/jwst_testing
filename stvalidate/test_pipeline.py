@@ -3,6 +3,7 @@ import numpy as np
 import unittest
 import pytest
 import os
+from .chapters import ReportChapter
 
 dq_dict = {
 'DO_NOT_USE' : 0,
@@ -38,11 +39,17 @@ dq_dict = {
 'OTHER_BAD_PIXEL' : 30,
 }
 
+def get_pixeldq_bit(name):
+    if name in dq_dict:
+        return dq_dict[name]
+    else:
+        return 'N/A'
+
 def bitwise_propagate(refhdu, pixeldq):
     for row in refhdu['DQ_DEF'].data:
         try:
             # find which pixels have the bit set
-            flagged = (np.bitwise_and(1, np.right_shift(refhdu['DQ'].data, row['BIT']))).astype(np.uint32)
+            flagged = (np.bitwise_and(1, np.right_shift(refhdu['DQ'].data.astype(np.uint32), row['BIT'])))
             # shift them to the correct bit for PIXELDQ
             flagged = np.left_shift(flagged, dq_dict[row['NAME']])
             # propagate into the PIXELDQ extension
@@ -51,6 +58,20 @@ def bitwise_propagate(refhdu, pixeldq):
             print("No DQ mnemonic "+row['NAME'])
     return pixeldq
 
+@pytest.fixture(scope="module")
+def toctree(request):
+    index = ReportChapter("JWST Calibration Pipeline Validation Testing Report")
+    index.add_text(".. toctree::"+'\n\t'+":maxdepth: 2")
+    def cleanup():
+        if pytest.config.getoption("--gen_report"):
+            curdir = os.getcwd()
+            config_dir = os.path.dirname(request.config.getoption("--config_file"))
+            os.chdir(config_dir)
+            index.write("source/index.rst")
+            os.chdir(curdir)
+
+    request.addfinalizer(cleanup)
+    return index
 
 class TestDQInitStep:
     """
@@ -86,13 +107,38 @@ class TestDQInitStep:
         ref_file = CRDS+output_file[0].header['R_MASK'][7:]
         return fits.open(ref_file)
 
-    def test_pixeldq_ext_exists(self, output_file):
+    @pytest.fixture(scope="class")
+    def chapter(self, request, toctree):
+        chapter = ReportChapter("Data Quality Initialization")
+
+        def cleanup():
+            if pytest.config.getoption("--gen_report"):
+                curdir = os.getcwd()
+                config_dir = os.path.dirname(request.config.getoption("--config_file"))
+                os.chdir(config_dir)
+                chapter.write("source/dq_init.rst")
+                toctree.add_text('\t'+"dq_init", extra_newline=False)
+                os.chdir(curdir)
+
+        request.addfinalizer(cleanup)
+        return chapter
+
+    def test_pixeldq_ext_exists(self, output_file, chapter, request):
         """
         Check that the PIXELDQ extension has been added to the output HDUList.
         """
-        assert("PIXELDQ" in output_file)
+        result = "PIXELDQ" in output_file
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
 
-    def test_pixeldq_propagation(self, output_file, refhdu):
+        assert result
+
+    def test_pixeldq_propagation(self, output_file, refhdu, chapter, request):
         """
         Check that all DQ flags are propagated from the reference file (header keyword 
         R_MASK) to the output PIXELDQ array.
@@ -119,37 +165,80 @@ class TestDQInitStep:
 
         """
         input_dq = np.zeros_like(output_file['PIXELDQ'].data)
-        result = bitwise_propagate(refhdu, input_dq) == output_file['PIXELDQ'].data
-        assert np.all(result)
+        result = np.all(bitwise_propagate(refhdu, input_dq) == output_file['PIXELDQ'].data)
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
 
-    def test_groupdq_ext_exists(self, output_file):
+        assert result
+
+    def test_groupdq_ext_exists(self, output_file, chapter, request):
         """
         Check that the GROUPDQ extension has been added to the output HDUList.
         """
+        result = "GROUPDQ" in output_file
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
 
-        assert("GROUPDQ" in output_file)
+        assert result
 
-    def test_groupdq_vals_all_zero(self, output_file):
+    def test_groupdq_vals_all_zero(self, output_file, chapter, request):
         """
         Check that the GROUPDQ array values are all initialized to zero.
         """
+        result = (np.all(output_file["GROUPDQ"].data == 0))
 
-        assert(np.all(output_file["GROUPDQ"].data == 0))
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
+
+        assert result
 
 
-    def test_err_ext_exists(self, output_file):
+    def test_err_ext_exists(self, output_file, chapter, request):
         """
         Check that the ERR extension has been added to the output HDUList.
         """
 
-        assert("ERR" in output_file)
+        result = ("ERR" in output_file)
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
 
-    def test_err_vals_all_zero(self, output_file):
+        assert result
+
+    def test_err_vals_all_zero(self, output_file, chapter, request):
         """
         Check that the ERR array values are all initialized to zero.
         """
 
-        assert(np.all(output_file["ERR"].data == 0))
+        result = (np.all(output_file["ERR"].data == 0))
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
+
+        assert result
 
 class TestSaturationStep:
     """
@@ -185,17 +274,33 @@ class TestSaturationStep:
         ref_file = CRDS+output_file[0].header['R_SATURA'][7:]
         return fits.open(ref_file)
 
-    def test_saturation_groupdq_set(self, output_file, refhdu):
+    @pytest.fixture(scope="class")
+    def chapter(self, request, toctree):
+        chapter = ReportChapter("Saturation")
+
+        def cleanup():
+            if pytest.config.getoption("--gen_report"):
+                curdir = os.getcwd()
+                config_dir = os.path.dirname(request.config.getoption("--config_file"))
+                os.chdir(config_dir)
+                chapter.write("source/saturation.rst")
+                toctree.add_text('\t'+"saturation", extra_newline=False)
+                os.chdir(curdir)
+
+        request.addfinalizer(cleanup)
+        return chapter
+
+    def test_saturation_groupdq_set(self, output_file, refhdu, chapter, request):
         """
         Check that for each group in the science data file, if the pixel exceeds the 
-        saturation level, then the SATURATED flag is set for that pixel in the 
-        corresponding plane of the GROUPDQ array – and in all subsequent planes.  
+        saturation level, then the SATURATED flag is set for that pixel in the
+        corresponding plane of the GROUPDQ array - and in all subsequent planes. 
         """
         if 'DQ' in refhdu:
             flag = np.logical_and(output_file['SCI'].data >= refhdu['SCI'].data, 
                 refhdu['DQ'].data != 2)
         else: 
-            flag = output_file['SCI'].data > refhdu['SCI'].data
+            flag = output_file['SCI'].data >= refhdu['SCI'].data
 
         expected_groupdq = np.zeros_like(output_file['GROUPDQ'].data)
         expected_groupdq[flag] = 2
@@ -204,10 +309,24 @@ class TestSaturationStep:
         flag = (np.cumsum(expected_groupdq == 2, axis=1) > 0)
         expected_groupdq[flag] = 2 
 
-        assert np.all(output_file['GROUPDQ'].data == expected_groupdq)
+        result = np.all(output_file['GROUPDQ'].data == expected_groupdq)
+        #if pytest.config.getoption("--gen_report"):
+            # chapter.add_subsection("Saturation Flag Check")
+
+            # description = "If the pixel value is higher than the saturation level determined by the reference file it should have its GROUPDQ value changed to 2 along with all subsequent pixels in the integration, unless it's PIXELDQ is flagged as NO_SAT_CHECK or it has a value of NaN.  We check that these flags are correctly set."
+            # chapter.add_text(description)
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
+
+        assert result
 
     @pytest.mark.dq_init
-    def test_saturation_pixeldq_propagation(self, output_file, refhdu, input_file):
+    def test_saturation_pixeldq_propagation(self, output_file, refhdu, input_file, request, chapter):
         """
         Check that all DQ flags are propagated from the reference file 
         (header keyword R_SATURA) to the output PIXELDQ array.
@@ -223,7 +342,37 @@ class TestSaturationStep:
             +-----+-------+---------------+--------------------------------+
 
         """
-        assert np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == output_file['PIXELDQ'].data)
+        try:
+            result = np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == output_file['PIXELDQ'].data)
+        except Exception as err:
+            if pytest.config.getoption("--gen_report"):
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` ERROR")
+                chapter.add_text("Failed due to Error: "+err.args[0])
+                chapter.add_text(request.function.__doc__)
+                assert False, "Failed due to Error: "+err.args[0]
+
+
+        #if pytest.config.getoption("--gen_report"):
+            # dq_def = list(refhdu['DQ_DEF'].data)
+            # dq_def.insert(0, refhdu['DQ_DEF'].data.columns.names)
+            # dq_def = [list(row) for row in dq_def]
+            # dq_def[0].insert(1, "PIXELDQ BIT")
+            # [row.insert(1, get_pixeldq_bit(row[2])) for row in dq_def[1:]]
+            # chapter.add_subsection("Data Quality Flag Propagation")
+
+            # description = "The reference file for this step has a DQ_DEF extension which describes the format of DQ extension, which contains various pixel quality flags.  We must ensure that the pipeline supported flags are properly tranlated into the PIXELDQ extension of the step output."
+            # chapter.add_text(description)
+            # chapter.add_table("Reference File DQ_DEF", dq_def)
+
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
+
+        assert result
 
 class TestIPCStep:
     """
@@ -293,16 +442,40 @@ class TestSuperbiasStep:
         ref_file = CRDS+output_file[0].header['R_SUPERB'][7:]
         return fits.open(ref_file)
 
-    def test_superbias_subtraction(self, output_file, refhdu, input_file):
+    @pytest.fixture(scope="class")
+    def chapter(self, request, toctree):
+        chapter = ReportChapter("Superbias Subtraction")
+
+        def cleanup():
+            if pytest.config.getoption("--gen_report"):
+                curdir = os.getcwd()
+                config_dir = os.path.dirname(request.config.getoption("--config_file"))
+                os.chdir(config_dir)
+                chapter.write("source/superbias.rst")
+                toctree.add_text('\t'+"superbias", extra_newline=False)
+                os.chdir(curdir)
+
+        request.addfinalizer(cleanup)
+        return chapter
+
+    def test_superbias_subtraction(self, output_file, refhdu, input_file, request, chapter):
         """
         Check that superbias is subtracted from each group in the image array, including 
         reference pixels.  
         """
-        check = refhdu['DQ'].data == 0
-        assert np.allclose(input_file['SCI'].data[check] - refhdu['SCI'].data[check], output_file['SCI'].data[check])
+        check = np.logical_or(refhdu['DQ'].data == 0, np.zeros_like(output_file['SCI'].data))
+        result = np.allclose((input_file['SCI'].data - refhdu['SCI'].data)[check], output_file['SCI'].data[check])
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
 
-    @pytest.mark.saturation
-    def test_superbias_pixeldq_propagation(self, output_file, refhdu, input_file):
+        assert result
+
+    def test_superbias_pixeldq_propagation(self, output_file, refhdu, input_file, request, chapter):
         """
         Check that all DQ flags are propagated from the reference file 
         (header keyword R_SUPERB) to the output PIXELDQ array.
@@ -318,9 +491,17 @@ class TestSuperbiasStep:
             +-----+-------+-----------------+---------------------+
 
         """
-        assert np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == superbias_hdu['PIXELDQ'].data)
+        result = np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == output_file['PIXELDQ'].data)
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
 
-@pytest.mark.refpix
+        assert result
+
 class TestRefpixStep:
     """
     The base class for testing Reference-Pixel Correction.
@@ -353,8 +534,24 @@ class TestRefpixStep:
     def refhdu(self, output_file):
         if 'R_REFPIX' in output_file[0].header:
             CRDS = '/grp/crds/cache/references/jwst/'
-            ref_file = CRDS+superbias_hdu[0].header['R_REFPIX'][7:]
+            ref_file = CRDS+output_file[0].header['R_REFPIX'][7:]
             return fits.open(ref_file)
+
+    @pytest.fixture(scope="class")
+    def chapter(self, request, toctree):
+        chapter = ReportChapter("Reference Pixel Correction")
+
+        def cleanup():
+            if pytest.config.getoption("--gen_report"):
+                curdir = os.getcwd()
+                config_dir = os.path.dirname(request.config.getoption("--config_file"))
+                os.chdir(config_dir)
+                chapter.write("source/refpix.rst")
+                toctree.add_text('\t'+"refpix", extra_newline=False)
+                os.chdir(curdir)
+
+        request.addfinalizer(cleanup)
+        return chapter
 
 class TestResetStep:
     """
@@ -390,7 +587,23 @@ class TestResetStep:
         ref_file = CRDS+output_file[0].header['R_RESET'][7:]
         return fits.open(ref_file)
 
-    def test_reset_correction(self, input_file, refhdu, output_file):
+    @pytest.fixture(scope="class")
+    def chapter(self, request, toctree):
+        chapter = ReportChapter("Reset Anomaly Correction")
+
+        def cleanup():
+            if pytest.config.getoption("--gen_report"):
+                curdir = os.getcwd()
+                config_dir = os.path.dirname(request.config.getoption("--config_file"))
+                os.chdir(config_dir)
+                chapter.write("source/reset.rst")
+                toctree.add_text('\t'+"reset", extra_newline=False)
+                os.chdir(curdir)
+
+        request.addfinalizer(cleanup)
+        return chapter
+
+    def test_reset_correction(self, input_file, refhdu, output_file, request, chapter):
         """
         Check that for each integration in the input science data, the 
         reset corrections are subtracted, group by group, integration 
@@ -412,10 +625,18 @@ class TestResetStep:
                     results.append(np.allclose(input_file['SCI'].data[i,g,:,:], output_file['SCI'].data[i,g,:,:]))
                 else:
                     results.append(np.allclose(input_file['SCI'].data[i,g,:,:] - refhdu['SCI'].data[i,g,:,:], output_file['SCI'].data[i,g,:,:]))
-        assert np.all(results)
+        result = np.all(results)
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
 
+        assert result
 
-    def test_reset_pixeldq_propagation(self, input_file, refhdu, output_file):
+    def test_reset_pixeldq_propagation(self, input_file, refhdu, output_file, request, chapter):
         """
         Check that all DQ flags are propagated from the reference file (header keyword 
         R_RESET) to the output PIXELDQ array.
@@ -431,8 +652,16 @@ class TestResetStep:
             +-----+-------+------------------+----------------------------+
 
         """
-        assert np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == output_file['PIXELDQ'].data)
+        result = np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == output_file['PIXELDQ'].data)
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
 
+        assert result
 
 class TestLastframeStep:
     """
@@ -471,14 +700,39 @@ class TestLastframeStep:
         ref_file = CRDS+output_file[0].header['R_LASTFR'][7:]
         return fits.open(ref_file)
 
-    def test_lastframe_correction(self, input_file, refhdu, output_file):
+    @pytest.fixture(scope="class")
+    def chapter(self, request, toctree):
+        chapter = ReportChapter("Lastframe Correction")
+
+        def cleanup():
+            if pytest.config.getoption("--gen_report"):
+                curdir = os.getcwd()
+                config_dir = os.path.dirname(request.config.getoption("--config_file"))
+                os.chdir(config_dir)
+                chapter.write("source/lastframe.rst")
+                toctree.add_text('\t'+"lastframe", extra_newline=False)
+                os.chdir(curdir)
+
+        request.addfinalizer(cleanup)
+        return chapter
+
+    def test_lastframe_correction(self, input_file, refhdu, output_file, request, chapter):
         """
         Check that the values in the SCI extension of the last-frame reference file are 
         subtracted from the final frame of the science exposure.
         """
         expected = input_file['SCI'].data
         expected[:,-1,:,:] -= refhdu['SCI'].data
-        assert np.allclose(expected, output_file['SCI'].data)
+        result = np.allclose(expected, output_file['SCI'].data)
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
+
+        assert result
 
 class TestLinearityStep:
     """
@@ -514,7 +768,23 @@ class TestLinearityStep:
         ref_file = CRDS+output_file[0].header['R_LINEAR'][7:]
         return fits.open(ref_file)
 
-    def test_linearity_correction(self, output_file, refhdu, input_file):
+    @pytest.fixture(scope="class")
+    def chapter(self, request, toctree):
+        chapter = ReportChapter("Linearity Correction")
+
+        def cleanup():
+            if pytest.config.getoption("--gen_report"):
+                curdir = os.getcwd()
+                config_dir = os.path.dirname(request.config.getoption("--config_file"))
+                os.chdir(config_dir)
+                chapter.write("source/linearity.rst")
+                toctree.add_text('\t'+"linearity", extra_newline=False)
+                os.chdir(curdir)
+
+        request.addfinalizer(cleanup)
+        return chapter
+
+    def test_linearity_correction(self, output_file, refhdu, input_file, request, chapter):
         """
         Check that the linearity correction is properly applied to all relevant pixels. The algorithm 
         uses a polynomial of the form
@@ -540,7 +810,16 @@ class TestLinearityStep:
 
         # make sure that the values linearity correction is properly applied to relevant pixels
         # and ignored elsewhere
-        assert linearity_applied and linearity_ignored
+        result = linearity_applied and linearity_ignored
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
+
+        assert result
 
     @pytest.fixture(scope="class")
     def _percent_rms(self, output_file):
@@ -568,7 +847,7 @@ class TestLinearityStep:
 
         return rms
 
-    def test_linearity_median_residuals_rms_lt_1percent(self, _percent_rms):
+    def test_linearity_median_residuals_rms_lt_1percent(self, _percent_rms, request, chapter):
         """
         Check that after the linearity correction the ramps agree with a linear 
         fit to an percent RMS of less than 1%.
@@ -579,17 +858,35 @@ class TestLinearityStep:
         
         """
         good = _percent_rms != 0
-        assert np.median(_percent_rms[good]) < 1.
+        result = np.median(_percent_rms[good]) < 1.
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
 
-    def test_linearity_99percent_of_residuals_rms_lt1percent(self, _percent_rms):
+        assert result
+
+    def test_linearity_99percent_of_residuals_rms_lt1percent(self, _percent_rms, request, chapter):
         """
         Check that more than 99% of pixels' residuals have percent RMS < 1%.
         """
         good = np.logical_and(_percent_rms != 0, ~np.isnan(_percent_rms))
-        assert float(np.sum(_percent_rms[good] < 1.))/len(_percent_rms[good]) < 99.
+        result = float(np.sum(_percent_rms[good] < 1.))/len(_percent_rms[good]) < 99.
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
+
+        assert result
 
     @pytest.mark.lastframe
-    def test_linearity_pixeldq_propagation(self, output_file, refhdu, input_file):
+    def test_linearity_pixeldq_propagation(self, output_file, refhdu, input_file, request, chapter):
         """
         Check that all DQ flags are propagated from the reference file (header keyword 
         R_LINEAR) to the output PIXELDQ array.
@@ -607,10 +904,16 @@ class TestLinearityStep:
             +-----+-------+------------------+-----------------------------------------+
 
         """
-        try:
-            assert np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == output_file['PIXELDQ'].data)
-        except KeyError:
-            assert np.all(refhdu['DQ'].data == 0)
+        result =  np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == output_file['PIXELDQ'].data)
+        if pytest.config.getoption("--gen_report"):
+            if result:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                chapter.add_text(request.function.__doc__)
+            else:
+                chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                chapter.add_text(request.function.__doc__)                
+
+        assert result
 
 class TestDarkCurrentStep:
     """
@@ -646,7 +949,23 @@ class TestDarkCurrentStep:
         ref_file = CRDS+output_file[0].header['R_DARK'][7:]
         return fits.open(ref_file)
 
-    def test_dark_current_subtraction(self, output_file, refhdu, input_file):
+    @pytest.fixture(scope="class")
+    def chapter(self, request, toctree):
+        chapter = ReportChapter("Dark Current Correction")
+
+        def cleanup():
+            if pytest.config.getoption("--gen_report"):
+                curdir = os.getcwd()
+                config_dir = os.path.dirname(request.config.getoption("--config_file"))
+                os.chdir(config_dir)
+                chapter.write("source/dark_current.rst")
+                toctree.add_text('\t'+"dark_current", extra_newline=False)
+                os.chdir(curdir)
+
+        request.addfinalizer(cleanup)
+        return chapter
+
+    def test_dark_current_subtraction(self, output_file, refhdu, input_file, request, chapter):
         """
         The Dark Current step can use reference files with one of two formats:  If the reference 
         file contains a ramp with NFRAMES=1 and GROUPGAP=0, then the program averages and skips dark 
@@ -666,7 +985,16 @@ class TestDarkCurrentStep:
         if nframes_tot > refhdu['SCI'].data.shape[0]:
             # data should remain unchanged if there are more frames in the 
             # science data than the reference file
-            assert np.all(input_file['SCI'].data == output_file['SCI'].data)
+            result = np.all(input_file['SCI'].data == output_file['SCI'].data)
+            if pytest.config.getoption("--gen_report"):
+                if result:
+                    chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                    chapter.add_text(request.function.__doc__)
+                else:
+                    chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                    chapter.add_text(request.function.__doc__)                
+
+            assert result
         else:
             dark_correct = np.zeros((nframes, ngroups, nx, ny))
             data = refhdu['SCI'].data[:nframes_tot, :, :]
@@ -675,10 +1003,18 @@ class TestDarkCurrentStep:
 
             dark_correct = np.average(dark_correct, axis=0)
             result = input_file['SCI'].data - dark_correct
-            assert np.allclose(result, output_file['SCI'].data)
+            result = np.allclose(result, output_file['SCI'].data)
+            if pytest.config.getoption("--gen_report"):
+                if result:
+                    chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                    chapter.add_text(request.function.__doc__)
+                else:
+                    chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                    chapter.add_text(request.function.__doc__)                
 
+            assert result
 
-    def test_dark_current_pixeldq_propagation(self, output_file, refhdu, input_file):
+    def test_dark_current_pixeldq_propagation(self, output_file, refhdu, input_file, request, chapter):
         """
         Check that all DQ flags are propagated from the reference file (header keyword 
         R_DARK) to the output PIXELDQ array.
@@ -704,10 +1040,28 @@ class TestDarkCurrentStep:
         nints, ngroups, nx, ny = output_file['SCI'].shape
         nframes_tot = (nframes+groupgap)*ngroups
         if nframes_tot > refhdu['SCI'].data.shape[0]:
-            assert np.all(input_file['PIXELDQ'].data == output_file['PIXELDQ'].data)
-        else:
-            assert np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == output_file['PIXELDQ'].data)
+            result = np.all(input_file['PIXELDQ'].data == output_file['PIXELDQ'].data)
+            if pytest.config.getoption("--gen_report"):
+                if result:
+                    chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                    chapter.add_text(request.function.__doc__)
+                else:
+                    chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                    chapter.add_text(request.function.__doc__)                
 
+            assert result
+        else:
+            result = np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == output_file['PIXELDQ'].data)
+            if pytest.config.getoption("--gen_report"):
+                if result:
+                    chapter.add_text(":py:meth:`"+request.function.__name__+"` PASSED")
+                    chapter.add_text(request.function.__doc__)
+                else:
+                    chapter.add_text(":py:meth:`"+request.function.__name__+"` FAILED")
+                    chapter.add_text(request.function.__doc__)                
+
+            assert result
+            
 class TestJumpStep:
     """
     The base class for testing Jump Detection.
@@ -769,59 +1123,81 @@ class TestRampFitStep:
 # ################################# 2B steps ###################################
 # ##############################################################################
 
-# @pytest.mark.assign_wcs
-# class TestAssignWCSStep:
-#     """
-#     The base class for testing the assign_wcs step
-#     """
+@pytest.mark.assign_wcs
+class TestAssignWCSStep:
+    """
+    The base class for testing the assign_wcs step
+    """
 
-# @pytest.mark.flat_field
-# class TestFlatFieldStep:
-#     """
-#     The base class for testing the flat_field step
-#     """
+@pytest.mark.flat_field
+class TestFlatFieldStep:
+    """
+    The base class for testing the flat_field step
+    """
+    @pytest.fixture(scope="class")
+    def input_file(self, request, config):
+        if  config.has_option("flat_field", "input_file"):
+            curdir = os.getcwd()
+            config_dir = os.path.dirname(request.config.getoption("--config_file"))
+            os.chdir(config_dir)
+            hdu = fits.open(config.get("flat_field", "input_file"))
+            os.chdir(curdir)
+            return hdu
+        else:
+            pytest.skip("needs flat_field input_file")
 
-#     @pytest.fixture
-#     def refhdu(self, flat_field_hdu):
-#         CRDS = '/grp/crds/cache/references/jwst/'
-#         ref_file = CRDS+flat_field_hdu[0].header['R_FLAT'][7:]
-#         return fits.open(ref_file)
+    @pytest.fixture(scope="class")
+    def output_file(self, request, config):
+        if  config.has_option("flat_field", "output_file"):
+            curdir = os.getcwd()
+            config_dir = os.path.dirname(request.config.getoption("--config_file"))
+            os.chdir(config_dir)
+            hdu = fits.open(config.get("flat_field", "output_file"))
+            os.chdir(curdir)
+            return hdu
+        else:
+            pytest.skip("needs flat_field output_file")
 
-#     def test_flat_field_correction(self, flat_field_hdu, refhdu, assign_wcs_hdu):
-#         """
-#         Check that the flat field correction is applied properly to the input file.
-#         The flat correction should divide the input data by the matching pixel values in the 
-#         reference file unless they are flagged in reference file DQ extension.
-#         """
-#         correct = refhdu['DQ'].data == 0
-#         expected_flat = assign_wcs_hdu['SCI'].data
-#         expected_flat[correct] = assign_wcs_hdu['SCI'].data[correct]/refhdu['SCI'].data[correct]
-#         assert np.all(flat_field_hdu['SCI'].data  == expected_flat)
+    @pytest.fixture
+    def refhdu(self, flat_field_hdu):
+        CRDS = '/grp/crds/cache/references/jwst/'
+        ref_file = CRDS+flat_field_hdu[0].header['R_FLAT'][7:]
+        return fits.open(ref_file)
 
-#     @pytest.mark.xfail
-#     def test_flat_field_dq(self, flat_field_hdu, refhdu, assign_wcs_hdu):
-#         """
-#         check that proper Data quality flags are added according to the reference file.
+    def test_flat_field_correction(self, input_file, refhdu, output_file):
+        """
+        Check that the flat field correction is applied properly to the input file.
+        The flat correction should divide the input data by the matching pixel values in the 
+        reference file unless they are flagged in reference file DQ extension.
+        """
+        correct = refhdu['DQ'].data == 0
+        expected_flat = input_file['SCI'].data
+        expected_flat[correct] = input_file['SCI'].data[correct]/refhdu['SCI'].data[correct]
+        assert np.all(output_file['SCI'].data  == expected_flat)
 
-#         NOTE: This fails in build 6.
-#         """
-#         assert np.all(bitwise_propagate(refhdu, assign_wcs_hdu['DQ'].data) == flat_field_hdu['DQ'].data)
+    def test_flat_field_dq(self, input_file, refhdu, output_file):
+        """
+        check that proper Data quality flags are added according to the reference file.
+
+        NOTE: This fails in build 6.
+        """
+        assert np.all(bitwise_propagate(refhdu, input_file['DQ'].data) == output_file['DQ'].data)
 
 
-# @pytest.mark.persistence
-# class TestPersistenceStep:
-#     """
-#     The base class for testing the persistence step
-#     """
+@pytest.mark.persistence
+class TestPersistenceStep:
+    """
+    The base class for testing the persistence step
+    """
 
-# @pytest.mark.emission
-# class TestEmissionStep:
-#     """
-#     The base class for testing the emission step
-#     """
+@pytest.mark.emission
+class TestEmissionStep:
+    """
+    The base class for testing the emission step
+    """
 
-# @pytest.mark.photom
-# class TestPhotomStep:
-#     """
-#     The base class for testing the photom step
-#     """
+@pytest.mark.photom
+class TestPhotomStep:
+    """
+    The base class for testing the photom step
+    """
