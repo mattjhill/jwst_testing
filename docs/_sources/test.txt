@@ -4,5 +4,5 @@ Tests
 Descriptions of all tests and their source code can be found below.  Tests are organized into classes with each step of the 
 pipeline having its own class (e.g. TestDQInitStep contains all of the tests for Data Quality Initialization.)
 
-.. automodule:: test_pipeline
+.. automodule:: stvalidate.test_pipeline
     :members:

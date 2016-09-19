@@ -6,11 +6,17 @@ Installation
 The test suite can be obtained by cloning the repository on GitHub `here
 <https://github.com/javerbukh/ST_Validate>`_.
 
-You can then run the test suite from within the repository via
+You can then install the tool with 
 
 .. code::
     
-    $ python st_validate.py /path/to/my_config.cfg
+    $ python setup.py install
+
+:code:`stvalidate` can be run from the command line with
+
+.. code::
+    
+    $ stvalidate /path/to/my_config.cfg
 
 Configuration Files
 -------------------
@@ -18,9 +24,9 @@ Configuration Files
 All of the options for running the test suite are set via a configuration file (my_config.cfg in the above command).
 For example, let's say you have some MIRI data in the directory :code:`/mydata/miri` which you have run through some of 
 the steps in the calibration pipeline.  In the configuration file you would set the appropriate values to the path 
-of the output file from that step, so :code:`dq_init_file` is the output after running the dq_init step.  If you skipped
-some steps or don't want to test the output just set the value to :code:`None` and the tests which require output from
-those steps will be skipped.
+of the input and output files from that step, so in the dq_init section :code:`input_file` is the input of the dq_init step of the pipeline and :code:`output_file` is output after running the dq_init step.  If you skipped
+some steps or don't want to test the output just remove the section associated with that step and the tests will be skipped
+automatically.
 
 You can also specify which tests to run or skip via the :code:`tests` option.  The example below (:code:`tests = pixeldq`)
 would select only tests which contain "pixeldq" in their name.  You can use any boolean expression to choose tests. For
@@ -30,42 +36,30 @@ example "pixeldq and not linearity" would choose all tests which contain "pixeld
 .. code::
 
     [dq_init]
-    dq_init_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_dq.fits
+    input_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_uncal.fits
+    output_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_dq.fits
     [saturation]
-    sat_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_sat.fits
-    [ipc]
-    ipc_file = None
-    [superbias]
-    superbias_file = None
+    input_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_dq.fits
+    output_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_sat.fits
     [refpix]
-    refpix_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_refpix.fits
+    input_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_sat.fits
+    output_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_refpix.fits
     [reset]
-    reset_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_reset.fits
+    input_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_refpix.fits
+    output_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_reset.fits
     [lastframe]
-    lastframe_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_lastframe.fits
+    input_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_reset.fits
+    output_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_lastframe.fits
     [linearity]
-    linearity_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_lin.fits
+    input_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_lastframe.fits
+    output_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_lin.fits
     [dark_current]
-    dark_current_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_dark_current.fits
-    [jump]
-    jump_file = None
-    [ramp_fit]
-    ramp_fit_file = None
-
-    [assign_wcs]
-    assign_wcs_file = None
-    [flat_field]
-    flat_field_file = None
-    [persistence]
-    persistence_file = None
-    [emission]
-    emission_file = None
-    [photom]
-    photom_file = None
+    input_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_lin.fits
+    output_file = /mydata/miri/jw06161001001_01101_00002_MIRIMAGE_dark_current.fits
 
     [options]
-    # run tests which contain 'propagation' in their name
-    tests = pixeldq
+    # run tests which contain 'pixeldq_propagation' in their name
+    tests = pixeldq_propagation
 
 Output
 ------

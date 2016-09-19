@@ -6,44 +6,44 @@ of the pipeline.
 
 .. table:: Pipeline Tests for CALDETECTOR1   
             
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Pipeline Step               | Test Name                                                                                         |
-    +=============================+===================================================================================================+
-    | Data Quality Initialization | | :py:meth:`~test_pipeline.TestDQInitStep.test_pixeldq_ext_exists`                                |
-    |                             | | :py:meth:`~test_pipeline.TestDQInitStep.test_pixeldq_propagation`                               |
-    |                             | | :py:meth:`~test_pipeline.TestDQInitStep.test_groupdq_ext_exists`                                |
-    |                             | | :py:meth:`~test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero`                             |
-    |                             | | :py:meth:`~test_pipeline.TestDQInitStep.test_err_ext_exists`                                    |    
-    |                             | | :py:meth:`~test_pipeline.TestDQInitStep.test_err_vals_all_zero`                                 |    
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Saturation Check            | | :py:meth:`~test_pipeline.TestSaturationStep.test_saturation_groupdq_set`                        |
-    |                             | | :py:meth:`~test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation`                |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | IPC Deconvolution           | | no tests implemented                                                                            |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Error Initialization        | | no tests implemented                                                                            |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Superbias Subtraction       | | :py:meth:`~test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation`                  |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Reference-Pixel Correction  | | no tests implemented                                                                            |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Reset-Anomaly Correction    | | :py:meth:`~test_pipeline.TestResetStep.test_reset_correction`                                   |
-    |                             | | :py:meth:`~test_pipeline.TestResetStep.test_reset_pixeldq_propagation`                          |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Last-Frame Correction       | | :py:meth:`~test_pipeline.TestLastframeStep.test_lastframe_correction`                           |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Linearity                   | | :py:meth:`~test_pipeline.TestLinearityStep.test_linearity_correction`                           |
-    |                             | | :py:meth:`~test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent`     |
-    |                             | | :py:meth:`~test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent`|
-    |                             | | :py:meth:`~test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation`                  |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Dark Current                | | :py:meth:`~test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation`             |
-    |                             | | :py:meth:`~test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction`                     |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Jump Detection              | | No tests implemented                                                                            |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+
-    | Ramp Fitting                | | No tests implemented                                                                            |
-    +-----------------------------+---------------------------------------------------------------------------------------------------+             
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Pipeline Step               | Test Name                                                                                                    |
+    +=============================+==============================================================================================================+
+    | Data Quality Initialization | | :py:meth:`~stvalidate.test_pipeline.TestDQInitStep.test_pixeldq_ext_exists`                                |
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestDQInitStep.test_pixeldq_propagation`                               |
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestDQInitStep.test_groupdq_ext_exists`                                |
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero`                             |
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestDQInitStep.test_err_ext_exists`                                    |    
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestDQInitStep.test_err_vals_all_zero`                                 |    
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Saturation Check            | | :py:meth:`~stvalidate.test_pipeline.TestSaturationStep.test_saturation_groupdq_set`                        |
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation`                |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | IPC Deconvolution           | | no tests implemented                                                                                       |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Error Initialization        | | no tests implemented                                                                                       |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Superbias Subtraction       | | :py:meth:`~stvalidate.test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation`                  |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Reference-Pixel Correction  | | no tests implemented                                                                                       |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Reset-Anomaly Correction    | | :py:meth:`~stvalidate.test_pipeline.TestResetStep.test_reset_correction`                                   |
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestResetStep.test_reset_pixeldq_propagation`                          |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Last-Frame Correction       | | :py:meth:`~stvalidate.test_pipeline.TestLastframeStep.test_lastframe_correction`                           |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Linearity                   | | :py:meth:`~stvalidate.test_pipeline.TestLinearityStep.test_linearity_correction`                           |
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent`     |
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent`|
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation`                  |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Dark Current                | | :py:meth:`~stvalidate.test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation`             |
+    |                             | | :py:meth:`~stvalidate.test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction`                     |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Jump Detection              | | No tests implemented                                                                                       |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+
+    | Ramp Fitting                | | No tests implemented                                                                                       |
+    +-----------------------------+--------------------------------------------------------------------------------------------------------------+             
 
 .. table:: Pipeline and Tests for CALIMAGE2 
             

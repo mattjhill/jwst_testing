@@ -132,19 +132,19 @@
 <h1>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h1>
 <p>Descriptions of all tests and their source code can be found below.  Tests are organized into classes with each step of the
 pipeline having its own class (e.g. TestDQInitStep contains all of the tests for Data Quality Initialization.)</p>
-<span class="target" id="module-test_pipeline"></span><dl class="class">
-<dt id="test_pipeline.TestDQInitStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestDQInitStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestDQInitStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestDQInitStep" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-stvalidate.test_pipeline"></span><dl class="class">
+<dt id="stvalidate.test_pipeline.TestDQInitStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestDQInitStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestDQInitStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestDQInitStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing the Data Quality Initialization.</p>
 <dl class="method">
-<dt id="test_pipeline.TestDQInitStep.test_pixeldq_ext_exists">
-<code class="descname">test_pixeldq_ext_exists</code><span class="sig-paren">(</span><em>dq_init_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestDQInitStep.test_pixeldq_ext_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestDQInitStep.test_pixeldq_ext_exists" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestDQInitStep.test_pixeldq_ext_exists">
+<code class="descname">test_pixeldq_ext_exists</code><span class="sig-paren">(</span><em>output_file</em>, <em>chapter</em>, <em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestDQInitStep.test_pixeldq_ext_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestDQInitStep.test_pixeldq_ext_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that the PIXELDQ extension has been added to the output HDUList.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestDQInitStep.test_pixeldq_propagation">
-<code class="descname">test_pixeldq_propagation</code><span class="sig-paren">(</span><em>dq_init_hdu</em>, <em>refhdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestDQInitStep.test_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestDQInitStep.test_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestDQInitStep.test_pixeldq_propagation">
+<code class="descname">test_pixeldq_propagation</code><span class="sig-paren">(</span><em>output_file</em>, <em>refhdu</em>, <em>chapter</em>, <em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestDQInitStep.test_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestDQInitStep.test_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that all DQ flags are propagated from the reference file (header keyword 
 R_MASK) to the output PIXELDQ array.</p>
 <table border="1" class="docutils" id="id1">
@@ -203,46 +203,46 @@ R_MASK) to the output PIXELDQ array.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestDQInitStep.test_groupdq_ext_exists">
-<code class="descname">test_groupdq_ext_exists</code><span class="sig-paren">(</span><em>dq_init_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestDQInitStep.test_groupdq_ext_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestDQInitStep.test_groupdq_ext_exists" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestDQInitStep.test_groupdq_ext_exists">
+<code class="descname">test_groupdq_ext_exists</code><span class="sig-paren">(</span><em>output_file</em>, <em>chapter</em>, <em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestDQInitStep.test_groupdq_ext_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestDQInitStep.test_groupdq_ext_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that the GROUPDQ extension has been added to the output HDUList.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero">
-<code class="descname">test_groupdq_vals_all_zero</code><span class="sig-paren">(</span><em>dq_init_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestDQInitStep.test_groupdq_vals_all_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero">
+<code class="descname">test_groupdq_vals_all_zero</code><span class="sig-paren">(</span><em>output_file</em>, <em>chapter</em>, <em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestDQInitStep.test_groupdq_vals_all_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that the GROUPDQ array values are all initialized to zero.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestDQInitStep.test_err_ext_exists">
-<code class="descname">test_err_ext_exists</code><span class="sig-paren">(</span><em>dq_init_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestDQInitStep.test_err_ext_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestDQInitStep.test_err_ext_exists" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestDQInitStep.test_err_ext_exists">
+<code class="descname">test_err_ext_exists</code><span class="sig-paren">(</span><em>output_file</em>, <em>chapter</em>, <em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestDQInitStep.test_err_ext_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestDQInitStep.test_err_ext_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that the ERR extension has been added to the output HDUList.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestDQInitStep.test_err_vals_all_zero">
-<code class="descname">test_err_vals_all_zero</code><span class="sig-paren">(</span><em>dq_init_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestDQInitStep.test_err_vals_all_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestDQInitStep.test_err_vals_all_zero" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestDQInitStep.test_err_vals_all_zero">
+<code class="descname">test_err_vals_all_zero</code><span class="sig-paren">(</span><em>output_file</em>, <em>chapter</em>, <em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestDQInitStep.test_err_vals_all_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestDQInitStep.test_err_vals_all_zero" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that the ERR array values are all initialized to zero.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestSaturationStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestSaturationStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestSaturationStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestSaturationStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestSaturationStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestSaturationStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestSaturationStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestSaturationStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing Saturation Check.</p>
 <dl class="method">
-<dt id="test_pipeline.TestSaturationStep.test_saturation_groupdq_set">
-<code class="descname">test_saturation_groupdq_set</code><span class="sig-paren">(</span><em>sat_hdu</em>, <em>refhdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestSaturationStep.test_saturation_groupdq_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestSaturationStep.test_saturation_groupdq_set" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestSaturationStep.test_saturation_groupdq_set">
+<code class="descname">test_saturation_groupdq_set</code><span class="sig-paren">(</span><em>output_file</em>, <em>refhdu</em>, <em>chapter</em>, <em>request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestSaturationStep.test_saturation_groupdq_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestSaturationStep.test_saturation_groupdq_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that for each group in the science data file, if the pixel exceeds the 
-saturation level, then the SATURATED flag is set for that pixel in the 
-corresponding plane of the GROUPDQ array – and in all subsequent planes.</p>
+saturation level, then the SATURATED flag is set for that pixel in the
+corresponding plane of the GROUPDQ array - and in all subsequent planes.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation">
-<code class="descname">test_saturation_pixeldq_propagation</code><span class="sig-paren">(</span><em>sat_hdu</em>, <em>refhdu</em>, <em>dq_init_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestSaturationStep.test_saturation_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation">
+<code class="descname">test_saturation_pixeldq_propagation</code><span class="sig-paren">(</span><em>output_file</em>, <em>refhdu</em>, <em>input_file</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestSaturationStep.test_saturation_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that all DQ flags are propagated from the reference file 
 (header keyword R_SATURA) to the output PIXELDQ array.</p>
 <table border="1" class="docutils" id="id2">
@@ -278,25 +278,25 @@ corresponding plane of the GROUPDQ array – and in all subsequent planes.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestIPCStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestIPCStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestIPCStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestIPCStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestIPCStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestIPCStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestIPCStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestIPCStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing IPC Deconvolution.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestSuperbiasStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestSuperbiasStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestSuperbiasStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestSuperbiasStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestSuperbiasStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestSuperbiasStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestSuperbiasStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestSuperbiasStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing Superbias Subtraction.</p>
 <dl class="method">
-<dt id="test_pipeline.TestSuperbiasStep.test_superbias_subtraction">
-<code class="descname">test_superbias_subtraction</code><span class="sig-paren">(</span><em>superbias_hdu</em>, <em>refhdu</em>, <em>sat_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestSuperbiasStep.test_superbias_subtraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestSuperbiasStep.test_superbias_subtraction" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestSuperbiasStep.test_superbias_subtraction">
+<code class="descname">test_superbias_subtraction</code><span class="sig-paren">(</span><em>output_file</em>, <em>refhdu</em>, <em>input_file</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestSuperbiasStep.test_superbias_subtraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestSuperbiasStep.test_superbias_subtraction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that superbias is subtracted from each group in the image array, including 
 reference pixels.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation">
-<code class="descname">test_superbias_pixeldq_propagation</code><span class="sig-paren">(</span><em>superbias_hdu</em>, <em>refhdu</em>, <em>sat_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestSuperbiasStep.test_superbias_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation">
+<code class="descname">test_superbias_pixeldq_propagation</code><span class="sig-paren">(</span><em>output_file</em>, <em>refhdu</em>, <em>input_file</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestSuperbiasStep.test_superbias_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that all DQ flags are propagated from the reference file 
 (header keyword R_SUPERB) to the output PIXELDQ array.</p>
 <table border="1" class="docutils" id="id3">
@@ -332,18 +332,18 @@ reference pixels.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestRefpixStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestRefpixStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestRefpixStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestRefpixStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestRefpixStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestRefpixStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestRefpixStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestRefpixStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing Reference-Pixel Correction.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestResetStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestResetStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestResetStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestResetStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestResetStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestResetStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestResetStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestResetStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing the Reset-Anomaly Correction.</p>
 <dl class="method">
-<dt id="test_pipeline.TestResetStep.test_reset_correction">
-<code class="descname">test_reset_correction</code><span class="sig-paren">(</span><em>refpix_hdu</em>, <em>refhdu</em>, <em>reset_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestResetStep.test_reset_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestResetStep.test_reset_correction" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestResetStep.test_reset_correction">
+<code class="descname">test_reset_correction</code><span class="sig-paren">(</span><em>input_file</em>, <em>refhdu</em>, <em>output_file</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestResetStep.test_reset_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestResetStep.test_reset_correction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that for each integration in the input science data, the 
 reset corrections are subtracted, group by group, integration 
 by integration. If the input science data contains more groups 
@@ -355,8 +355,8 @@ Only performed for MIRI data.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestResetStep.test_reset_pixeldq_propagation">
-<code class="descname">test_reset_pixeldq_propagation</code><span class="sig-paren">(</span><em>refpix_hdu</em>, <em>refhdu</em>, <em>reset_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestResetStep.test_reset_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestResetStep.test_reset_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestResetStep.test_reset_pixeldq_propagation">
+<code class="descname">test_reset_pixeldq_propagation</code><span class="sig-paren">(</span><em>input_file</em>, <em>refhdu</em>, <em>output_file</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestResetStep.test_reset_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestResetStep.test_reset_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that all DQ flags are propagated from the reference file (header keyword 
 R_RESET) to the output PIXELDQ array.</p>
 <table border="1" class="docutils" id="id4">
@@ -392,12 +392,12 @@ R_RESET) to the output PIXELDQ array.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestLastframeStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestLastframeStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestLastframeStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestLastframeStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestLastframeStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestLastframeStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestLastframeStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestLastframeStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing Last-Frame Correction.</p>
 <dl class="method">
-<dt id="test_pipeline.TestLastframeStep.test_lastframe_correction">
-<code class="descname">test_lastframe_correction</code><span class="sig-paren">(</span><em>reset_hdu</em>, <em>refhdu</em>, <em>lastframe_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestLastframeStep.test_lastframe_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestLastframeStep.test_lastframe_correction" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestLastframeStep.test_lastframe_correction">
+<code class="descname">test_lastframe_correction</code><span class="sig-paren">(</span><em>input_file</em>, <em>refhdu</em>, <em>output_file</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestLastframeStep.test_lastframe_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestLastframeStep.test_lastframe_correction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that the values in the SCI extension of the last-frame reference file are 
 subtracted from the final frame of the science exposure.</p>
 </dd></dl>
@@ -405,12 +405,12 @@ subtracted from the final frame of the science exposure.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestLinearityStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestLinearityStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestLinearityStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestLinearityStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestLinearityStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestLinearityStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestLinearityStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestLinearityStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing the Linearity.</p>
 <dl class="method">
-<dt id="test_pipeline.TestLinearityStep.test_linearity_correction">
-<code class="descname">test_linearity_correction</code><span class="sig-paren">(</span><em>linearity_hdu</em>, <em>refhdu</em>, <em>lastframe_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestLinearityStep.test_linearity_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestLinearityStep.test_linearity_correction" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestLinearityStep.test_linearity_correction">
+<code class="descname">test_linearity_correction</code><span class="sig-paren">(</span><em>output_file</em>, <em>refhdu</em>, <em>input_file</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestLinearityStep.test_linearity_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestLinearityStep.test_linearity_correction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that the linearity correction is properly applied to all relevant pixels. The algorithm 
 uses a polynomial of the form</p>
 <div class="math">
@@ -421,8 +421,8 @@ reference file.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent">
-<code class="descname">test_linearity_median_residuals_rms_lt_1percent</code><span class="sig-paren">(</span><em>_percent_rms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent">
+<code class="descname">test_linearity_median_residuals_rms_lt_1percent</code><span class="sig-paren">(</span><em>_percent_rms</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that after the linearity correction the ramps agree with a linear 
 fit to an percent RMS of less than 1%.
 Where</p>
@@ -431,14 +431,14 @@ Where</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent">
-<code class="descname">test_linearity_99percent_of_residuals_rms_lt1percent</code><span class="sig-paren">(</span><em>_percent_rms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent">
+<code class="descname">test_linearity_99percent_of_residuals_rms_lt1percent</code><span class="sig-paren">(</span><em>_percent_rms</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that more than 99% of pixels&#8217; residuals have percent RMS &lt; 1%.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation">
-<code class="descname">test_linearity_pixeldq_propagation</code><span class="sig-paren">(</span><em>linearity_hdu</em>, <em>refhdu</em>, <em>lastframe_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestLinearityStep.test_linearity_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation">
+<code class="descname">test_linearity_pixeldq_propagation</code><span class="sig-paren">(</span><em>output_file</em>, <em>refhdu</em>, <em>input_file</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestLinearityStep.test_linearity_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that all DQ flags are propagated from the reference file (header keyword 
 R_LINEAR) to the output PIXELDQ array.</p>
 <table border="1" class="docutils" id="id5">
@@ -479,12 +479,12 @@ R_LINEAR) to the output PIXELDQ array.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestDarkCurrentStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestDarkCurrentStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestDarkCurrentStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestDarkCurrentStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestDarkCurrentStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestDarkCurrentStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestDarkCurrentStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestDarkCurrentStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing the Dark Current Subtraction.</p>
 <dl class="method">
-<dt id="test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction">
-<code class="descname">test_dark_current_subtraction</code><span class="sig-paren">(</span><em>dark_current_hdu</em>, <em>refhdu</em>, <em>linearity_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestDarkCurrentStep.test_dark_current_subtraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction">
+<code class="descname">test_dark_current_subtraction</code><span class="sig-paren">(</span><em>output_file</em>, <em>refhdu</em>, <em>input_file</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestDarkCurrentStep.test_dark_current_subtraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Dark Current step can use reference files with one of two formats:  If the reference 
 file contains a ramp with NFRAMES=1 and GROUPGAP=0, then the program averages and skips dark 
 frames to match the NFRAMES and GROUPGAP values of the science data, before performing a 
@@ -497,8 +497,8 @@ warning and return the science image unchanged.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation">
-<code class="descname">test_dark_current_pixeldq_propagation</code><span class="sig-paren">(</span><em>dark_current_hdu</em>, <em>refhdu</em>, <em>linearity_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestDarkCurrentStep.test_dark_current_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation">
+<code class="descname">test_dark_current_pixeldq_propagation</code><span class="sig-paren">(</span><em>output_file</em>, <em>refhdu</em>, <em>input_file</em>, <em>request</em>, <em>chapter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestDarkCurrentStep.test_dark_current_pixeldq_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that all DQ flags are propagated from the reference file (header keyword 
 R_DARK) to the output PIXELDQ array.</p>
 <table border="1" class="docutils" id="id6">
@@ -549,38 +549,38 @@ R_DARK) to the output PIXELDQ array.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestJumpStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestJumpStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestJumpStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestJumpStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestJumpStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestJumpStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestJumpStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestJumpStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing Jump Detection.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestRampFitStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestRampFitStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestRampFitStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestRampFitStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestRampFitStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestRampFitStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestRampFitStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestRampFitStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing Ramp Fitting.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestAssignWCSStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestAssignWCSStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestAssignWCSStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestAssignWCSStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestAssignWCSStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestAssignWCSStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestAssignWCSStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestAssignWCSStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing the assign_wcs step</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestFlatFieldStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestFlatFieldStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestFlatFieldStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestFlatFieldStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestFlatFieldStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestFlatFieldStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestFlatFieldStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestFlatFieldStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing the flat_field step</p>
 <dl class="method">
-<dt id="test_pipeline.TestFlatFieldStep.test_flat_field_correction">
-<code class="descname">test_flat_field_correction</code><span class="sig-paren">(</span><em>flat_field_hdu</em>, <em>refhdu</em>, <em>assign_wcs_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestFlatFieldStep.test_flat_field_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestFlatFieldStep.test_flat_field_correction" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestFlatFieldStep.test_flat_field_correction">
+<code class="descname">test_flat_field_correction</code><span class="sig-paren">(</span><em>input_file</em>, <em>refhdu</em>, <em>output_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestFlatFieldStep.test_flat_field_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestFlatFieldStep.test_flat_field_correction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that the flat field correction is applied properly to the input file.
 The flat correction should divide the input data by the matching pixel values in the 
 reference file unless they are flagged in reference file DQ extension.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="test_pipeline.TestFlatFieldStep.test_flat_field_dq">
-<code class="descname">test_flat_field_dq</code><span class="sig-paren">(</span><em>flat_field_hdu</em>, <em>refhdu</em>, <em>assign_wcs_hdu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_pipeline.html#TestFlatFieldStep.test_flat_field_dq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestFlatFieldStep.test_flat_field_dq" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestFlatFieldStep.test_flat_field_dq">
+<code class="descname">test_flat_field_dq</code><span class="sig-paren">(</span><em>input_file</em>, <em>refhdu</em>, <em>output_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestFlatFieldStep.test_flat_field_dq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestFlatFieldStep.test_flat_field_dq" title="Permalink to this definition">¶</a></dt>
 <dd><p>check that proper Data quality flags are added according to the reference file.</p>
 <p>NOTE: This fails in build 6.</p>
 </dd></dl>
@@ -588,20 +588,20 @@ reference file unless they are flagged in reference file DQ extension.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestPersistenceStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestPersistenceStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestPersistenceStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestPersistenceStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestPersistenceStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestPersistenceStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestPersistenceStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestPersistenceStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing the persistence step</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestEmissionStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestEmissionStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestEmissionStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestEmissionStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestEmissionStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestEmissionStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestEmissionStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestEmissionStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing the emission step</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="test_pipeline.TestPhotomStep">
-<em class="property">class </em><code class="descclassname">test_pipeline.</code><code class="descname">TestPhotomStep</code><a class="reference internal" href="_modules/test_pipeline.html#TestPhotomStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_pipeline.TestPhotomStep" title="Permalink to this definition">¶</a></dt>
+<dt id="stvalidate.test_pipeline.TestPhotomStep">
+<em class="property">class </em><code class="descclassname">stvalidate.test_pipeline.</code><code class="descname">TestPhotomStep</code><a class="reference internal" href="_modules/stvalidate/test_pipeline.html#TestPhotomStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stvalidate.test_pipeline.TestPhotomStep" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for testing the photom step</p>
 </dd></dl>
 

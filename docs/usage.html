@@ -139,8 +139,12 @@
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>The test suite can be obtained by cloning the repository on GitHub <a class="reference external" href="https://github.com/javerbukh/ST_Validate">here</a>.</p>
-<p>You can then run the test suite from within the repository via</p>
-<div class="code highlight-default"><div class="highlight"><pre><span></span>$ python st_validate.py /path/to/my_config.cfg
+<p>You can then install the tool with</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span>$ python setup.py install
+</pre></div>
+</div>
+<p><code class="code docutils literal"><span class="pre">stvalidate</span></code> can be run from the command line with</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span>$ stvalidate /path/to/my_config.cfg
 </pre></div>
 </div>
 </div>
@@ -149,50 +153,38 @@
 <p>All of the options for running the test suite are set via a configuration file (my_config.cfg in the above command).
 For example, let&#8217;s say you have some MIRI data in the directory <code class="code docutils literal"><span class="pre">/mydata/miri</span></code> which you have run through some of
 the steps in the calibration pipeline.  In the configuration file you would set the appropriate values to the path
-of the output file from that step, so <code class="code docutils literal"><span class="pre">dq_init_file</span></code> is the output after running the dq_init step.  If you skipped
-some steps or don&#8217;t want to test the output just set the value to <code class="code docutils literal"><span class="pre">None</span></code> and the tests which require output from
-those steps will be skipped.</p>
+of the input and output files from that step, so in the dq_init section <code class="code docutils literal"><span class="pre">input_file</span></code> is the input of the dq_init step of the pipeline and <code class="code docutils literal"><span class="pre">output_file</span></code> is output after running the dq_init step.  If you skipped
+some steps or don&#8217;t want to test the output just remove the section associated with that step and the tests will be skipped
+automatically.</p>
 <p>You can also specify which tests to run or skip via the <code class="code docutils literal"><span class="pre">tests</span></code> option.  The example below (<code class="code docutils literal"><span class="pre">tests</span> <span class="pre">=</span> <span class="pre">pixeldq</span></code>)
 would select only tests which contain &#8220;pixeldq&#8221; in their name.  You can use any boolean expression to choose tests. For
 example &#8220;pixeldq and not linearity&#8221; would choose all tests which contain &#8220;pixeldq&#8221; in their name unless they also contain
 &#8220;linearity&#8221;. The full list of tests and their descriptions can be found in the <a class="reference internal" href="test.html"><span class="doc">Tests</span></a> section.</p>
 <div class="code highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">dq_init</span><span class="p">]</span>
-<span class="n">dq_init_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_dq</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_uncal</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_dq</span><span class="o">.</span><span class="n">fits</span>
 <span class="p">[</span><span class="n">saturation</span><span class="p">]</span>
-<span class="n">sat_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_sat</span><span class="o">.</span><span class="n">fits</span>
-<span class="p">[</span><span class="n">ipc</span><span class="p">]</span>
-<span class="n">ipc_file</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">[</span><span class="n">superbias</span><span class="p">]</span>
-<span class="n">superbias_file</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_dq</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_sat</span><span class="o">.</span><span class="n">fits</span>
 <span class="p">[</span><span class="n">refpix</span><span class="p">]</span>
-<span class="n">refpix_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_refpix</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_sat</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_refpix</span><span class="o">.</span><span class="n">fits</span>
 <span class="p">[</span><span class="n">reset</span><span class="p">]</span>
-<span class="n">reset_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_reset</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_refpix</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_reset</span><span class="o">.</span><span class="n">fits</span>
 <span class="p">[</span><span class="n">lastframe</span><span class="p">]</span>
-<span class="n">lastframe_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_lastframe</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_reset</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_lastframe</span><span class="o">.</span><span class="n">fits</span>
 <span class="p">[</span><span class="n">linearity</span><span class="p">]</span>
-<span class="n">linearity_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_lin</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_lastframe</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_lin</span><span class="o">.</span><span class="n">fits</span>
 <span class="p">[</span><span class="n">dark_current</span><span class="p">]</span>
-<span class="n">dark_current_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_dark_current</span><span class="o">.</span><span class="n">fits</span>
-<span class="p">[</span><span class="n">jump</span><span class="p">]</span>
-<span class="n">jump_file</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">[</span><span class="n">ramp_fit</span><span class="p">]</span>
-<span class="n">ramp_fit_file</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="p">[</span><span class="n">assign_wcs</span><span class="p">]</span>
-<span class="n">assign_wcs_file</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">[</span><span class="n">flat_field</span><span class="p">]</span>
-<span class="n">flat_field_file</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">[</span><span class="n">persistence</span><span class="p">]</span>
-<span class="n">persistence_file</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">[</span><span class="n">emission</span><span class="p">]</span>
-<span class="n">emission_file</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">[</span><span class="n">photom</span><span class="p">]</span>
-<span class="n">photom_file</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_lin</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_dark_current</span><span class="o">.</span><span class="n">fits</span>
 
 <span class="p">[</span><span class="n">options</span><span class="p">]</span>
-<span class="c1"># run tests which contain &#39;propagation&#39; in their name</span>
-<span class="n">tests</span> <span class="o">=</span> <span class="n">pixeldq</span>
+<span class="c1"># run tests which contain &#39;pixeldq_propagation&#39; in their name</span>
+<span class="n">tests</span> <span class="o">=</span> <span class="n">pixeldq_propagation</span>
 </pre></div>
 </div>
 </div>

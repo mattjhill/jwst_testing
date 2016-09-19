@@ -345,11 +345,12 @@ class TestSaturationStep:
         try:
             result = np.all(bitwise_propagate(refhdu, input_file['PIXELDQ'].data) == output_file['PIXELDQ'].data)
         except Exception as err:
+            result = False
             if pytest.config.getoption("--gen_report"):
                 chapter.add_text(":py:meth:`"+request.function.__name__+"` ERROR")
                 chapter.add_text("Failed due to Error: "+err.args[0])
                 chapter.add_text(request.function.__doc__)
-                assert False, "Failed due to Error: "+err.args[0]
+                assert result, "Failed due to Error: "+err.args[0]
 
 
         #if pytest.config.getoption("--gen_report"):
