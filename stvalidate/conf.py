@@ -34,7 +34,7 @@ numfig = True
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.ifconfig',
-    'sphinx.ext.mathjax'
+    'sphinx.ext.mathjax',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -215,7 +215,8 @@ htmlhelp_basename = 'JWSTCalibrationPipelineValidationTestingReportdoc'
 
 latex_elements = {
   'classoptions': ',openany,oneside',
-  'babel': '\\usepackage[english]{babel}'
+  'babel': '\\usepackage[english]{babel}',
+#  'fncychap': '\\usepackage[Conny]{fncychap}'
 
 # The paper size ('letterpaper' or 'a4paper').
 #'papersize': 'letterpaper',
@@ -240,7 +241,7 @@ latex_documents = [
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-#latex_logo = None
+# latex_logo = '/Users/mhill/Downloads/jwst.png'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
