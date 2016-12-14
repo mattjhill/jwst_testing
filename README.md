@@ -1,4 +1,4 @@
 JWST Pipeline Validation
 
-See the [documentation](https://javerbukh.github.io/ST_Validate/)
+See the [documentation](https://stsci-mesa.github.io/stvalidate/)
 
