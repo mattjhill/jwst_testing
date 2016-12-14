@@ -24,6 +24,10 @@ def main(args):
     if config.has_option("options","gen_report"):
         if config.get("options","gen_report") == "True":
             pytest_args.append('--gen_report')
+    if config.has_option("options", "pytest_html"):
+        pytest_args.append('--html={}'.format(config_abs_path+config.get('options', 'pytest_html')))
+
+    print(pytest_args)
 
     pytest_args.append('test_pipeline.py')
     pytest.main(pytest_args)
@@ -31,31 +35,32 @@ def main(args):
     os.chdir(starting_dir)
 
     # generate reports with sphinx
-    if config.has_option("options", "gen_report"):
-        if config.get("options", "gen_report") == "True":
-            print("generating report")
-            if not os.path.exists(os.path.join(os.path.dirname(config_abs_path),'source')):
-                os.makedirs(os.path.join(os.path.dirname(config_abs_path),'source'))
+    # if config.has_option("options", "gen_report"):
+    #     if config.get("options", "gen_report") == "True":
+    #         print("generating report")
+    #         if not os.path.exists(os.path.join(os.path.dirname(config_abs_path),'source')):
+    #             os.makedirs(os.path.join(os.path.dirname(config_abs_path),'source'))
             
-            copyfile(os.path.join(os.path.dirname(stvalidate.__file__), "conf.py"), 
-                os.path.join(os.path.dirname(config_abs_path),'source/conf.py'))
+    #         copyfile(os.path.join(os.path.dirname(stvalidate.__file__), "conf.py"), 
+    #             os.path.join(os.path.dirname(config_abs_path),'source/conf.py'))
 
-            call(["sphinx-build", "-b", "latex", os.path.join(os.path.dirname(config_abs_path),"source"), 
-                os.path.join(os.path.dirname(config_abs_path),"build")])
-            os.chdir(os.path.join(os.path.dirname(config_abs_path),"build"))
-            call(["pdflatex", "JWSTCalibrationPipelineValidationTestingReport.tex"])
-            call(["pdflatex", "JWSTCalibrationPipelineValidationTestingReport.tex"])
-            os.chdir("..")
-            if config.has_option("options", "report_filename"):
-                copyfile("build/JWSTCalibrationPipelineValidationTestingReport.pdf", 
-                    config.get("options", "report_filename"))
-            else:
-                copyfile("build/JWSTCalibrationPipelineValidationTestingReport.pdf", 
-                    "report.pdf")
+    #         call(["sphinx-build", "-b", "latex", os.path.join(os.path.dirname(config_abs_path),"source"), 
+    #             os.path.join(os.path.dirname(config_abs_path),"build")])
+    #         os.chdir(os.path.join(os.path.dirname(config_abs_path),"build"))
+    #         call(["pdflatex", "JWSTCalibrationPipelineValidationTestingReport.tex"])
+    #         call(["pdflatex", "JWSTCalibrationPipelineValidationTestingReport.tex"])
+    #         os.chdir("..")
+    #         if config.has_option("options", "report_filename"):
+    #             copyfile("build/JWSTCalibrationPipelineValidationTestingReport.pdf", 
+    #                 config.get("options", "report_filename"))
+    #         else:
+    #             copyfile("build/JWSTCalibrationPipelineValidationTestingReport.pdf", 
+    #                 "report.pdf")
 
-            # clean up
-            rmtree(os.path.join('build/'))
-            rmtree(os.path.join('source/'))
+    #         # clean up
+    #         rmtree(os.path.join('build/'))
+    #         rmtree(os.path.join('source/'))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test the JWST calibration pipeline')
