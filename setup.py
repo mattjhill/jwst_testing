@@ -1,8 +1,7 @@
 from setuptools import setup
 
 setup(
-    name = "stvalidate",
-    packages = ["stvalidate"],
-    scripts=["scripts/stvalidate"],
+    name = "jwst_testing",
+    packages = ["jwst_testing"],
     zip_safe = False,
     )

@@ -1,3 +1,7 @@
+"""
+py.test configuration for the *entire* test suite
+"""
+
 import pytest
 import ConfigParser
 
@@ -10,7 +14,7 @@ def pytest_addoption(parser):
     parser.addoption("--gen_report", action="store_true",
         help="generate a report or not")
     
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session", autouse=True)
 def config(request):
     config = ConfigParser.ConfigParser()
     config.read(request.config.getoption("--config_file"))
