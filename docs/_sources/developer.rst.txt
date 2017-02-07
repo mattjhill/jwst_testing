@@ -1,0 +1,73 @@
+Developer Guide
+===============
+
+The ``jwst_testing`` package facilitates automatic testing of the JWST Calibration Pipeline, including unit a unit testing suite using ``pytest``.
+The package structure is as follows
+
+.. code::
+
+    jwst_testing
+    ├── __init__.py
+    ├── conftest.py
+    ├── core_utils.py
+    ├── dark_current
+    │   ├── __init__.py
+    │   ├── dark_current_utils.py
+    │   └── test_dark_current.py
+    ├── dq_init
+    │   ├── __init__.py
+    │   ├── dq_init_utils.py
+    │   └── test_dq_init.py
+    ├── ipc
+    │   ├── __init__.py
+    │   ├── ipc_utils.py
+    │   └── test_ipc.py
+    ├── jump
+    │   └── __init__.py
+    ├── lastframe
+    │   ├── __init__.py
+    │   ├── lastframe_utils.py
+    │   └── test_lastframe.py
+    ├── linearity
+    │   ├── __init__.py
+    │   ├── linearity_utils.py
+    │   └── test_linearity.py
+    ├── persistence
+    │   └── __init__.py
+    ├── ramp_fit
+    │   └── __init__.py
+    ├── refpix
+    │   ├── __init__.py
+    │   ├── refpix_utils.py
+    │   └── test_refpix.py
+    ├── rscd
+    │   ├── __init__.py
+    │   ├── rscd_utils.py
+    │   └── test_rscd.py
+    ├── saturation
+    │   ├── __init__.py
+    │   ├── saturation_utils.py
+    │   └── test_saturation.py
+    └── superbias
+        ├── __init__.py
+        ├── superbias_utils.py
+        └── test_superbias.py
+
+In the root directory we have two files ``conftest.py`` and ``coreutils.py``.  The ``conftest.py`` configures session-wide ``pytest`` settings.
+
+.. literalinclude:: ../../jwst_testing/conftest.py
+    :language: python
+
+Here we have added an option to pass additional command line arguments to ``pytest`` and fixture which opens and makes available the configuration file across all subsequent test modules.
+
+In ``coreutils.py`` we have defined useful functions which may be used in many different tests.
+
+Below the root directory there is a directory for each step in the pipeline.
+In each of those directories there are two important files ``{step}_utils.py`` and ``test_{step}.py``.
+In ``{step}_utils.py`` we have defined the machinery to execute tests separately from the ``pytest`` framwork.
+This allows all testing utils to be used e.g. interactively in an IPython session or any other desired workflow.
+
+The ``test_{step}.py`` contains the ``pytest`` setup and tests to execute.
+This can include fixtures which open files at the module level for testing.
+The tests themselves call the utililties defined in ``{step}_utils.py`` within the ``pytest`` framework.
+

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to ST_Validate’s documentation! &mdash; ST_Validate 0.1 documentation</title>
+  <title>Welcome to JWST Testing’s documentation! &mdash; JWST Testing 0.1 documentation</title>
   
 
   
@@ -30,8 +30,11 @@
   
 
   
-    <link rel="top" title="ST_Validate 0.1 documentation" href="#"/>
-        <link rel="next" title="Introduction" href="intro.html"/> 
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="JWST Testing 0.1 documentation" href="#"/>
+        <link rel="next" title="Developer Guide" href="developer.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -49,7 +52,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> ST_Validate
+            <a href="#" class="icon icon-home"> JWST Testing
           
 
           
@@ -81,9 +84,7 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="test.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Guide</a></li>
 </ul>
 
             
@@ -97,7 +98,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">ST_Validate</a>
+        <a href="#">JWST Testing</a>
       </nav>
 
 
@@ -114,11 +115,11 @@
   <ul class="wy-breadcrumbs">
     <li><a href="#">Docs</a> &raquo;</li>
       
-    <li>Welcome to ST_Validate&#8217;s documentation!</li>
+    <li>Welcome to JWST Testing&#8217;s documentation!</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -128,246 +129,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-st-validate-s-documentation">
-<h1>Welcome to ST_Validate&#8217;s documentation!<a class="headerlink" href="#welcome-to-st-validate-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>ST_Validate provides automated testing of JWST Calibration pipeline.  The table below shows the current tests implemented for each step
-of the pipeline.</p>
-<table border="1" class="docutils" id="id1">
-<caption><span class="caption-text">Pipeline Tests for CALDETECTOR1</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
-<colgroup>
-<col width="21%" />
-<col width="79%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Pipeline Step</th>
-<th class="head">Test Name</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>Data Quality Initialization</td>
-<td><div class="first last line-block">
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestDQInitStep.test_pixeldq_ext_exists" title="stvalidate.test_pipeline.TestDQInitStep.test_pixeldq_ext_exists"><code class="xref py py-meth docutils literal"><span class="pre">test_pixeldq_ext_exists()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestDQInitStep.test_pixeldq_propagation" title="stvalidate.test_pipeline.TestDQInitStep.test_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_pixeldq_propagation()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestDQInitStep.test_groupdq_ext_exists" title="stvalidate.test_pipeline.TestDQInitStep.test_groupdq_ext_exists"><code class="xref py py-meth docutils literal"><span class="pre">test_groupdq_ext_exists()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero" title="stvalidate.test_pipeline.TestDQInitStep.test_groupdq_vals_all_zero"><code class="xref py py-meth docutils literal"><span class="pre">test_groupdq_vals_all_zero()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestDQInitStep.test_err_ext_exists" title="stvalidate.test_pipeline.TestDQInitStep.test_err_ext_exists"><code class="xref py py-meth docutils literal"><span class="pre">test_err_ext_exists()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestDQInitStep.test_err_vals_all_zero" title="stvalidate.test_pipeline.TestDQInitStep.test_err_vals_all_zero"><code class="xref py py-meth docutils literal"><span class="pre">test_err_vals_all_zero()</span></code></a></div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Saturation Check</td>
-<td><div class="first last line-block">
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestSaturationStep.test_saturation_groupdq_set" title="stvalidate.test_pipeline.TestSaturationStep.test_saturation_groupdq_set"><code class="xref py py-meth docutils literal"><span class="pre">test_saturation_groupdq_set()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation" title="stvalidate.test_pipeline.TestSaturationStep.test_saturation_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_saturation_pixeldq_propagation()</span></code></a></div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>IPC Deconvolution</td>
-<td><div class="first last line-block">
-<div class="line">no tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Error Initialization</td>
-<td><div class="first last line-block">
-<div class="line">no tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Superbias Subtraction</td>
-<td><div class="first last line-block">
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation" title="stvalidate.test_pipeline.TestSuperbiasStep.test_superbias_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_superbias_pixeldq_propagation()</span></code></a></div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Reference-Pixel Correction</td>
-<td><div class="first last line-block">
-<div class="line">no tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Reset-Anomaly Correction</td>
-<td><div class="first last line-block">
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestResetStep.test_reset_correction" title="stvalidate.test_pipeline.TestResetStep.test_reset_correction"><code class="xref py py-meth docutils literal"><span class="pre">test_reset_correction()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestResetStep.test_reset_pixeldq_propagation" title="stvalidate.test_pipeline.TestResetStep.test_reset_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_reset_pixeldq_propagation()</span></code></a></div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Last-Frame Correction</td>
-<td><div class="first last line-block">
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestLastframeStep.test_lastframe_correction" title="stvalidate.test_pipeline.TestLastframeStep.test_lastframe_correction"><code class="xref py py-meth docutils literal"><span class="pre">test_lastframe_correction()</span></code></a></div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Linearity</td>
-<td><div class="first last line-block">
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestLinearityStep.test_linearity_correction" title="stvalidate.test_pipeline.TestLinearityStep.test_linearity_correction"><code class="xref py py-meth docutils literal"><span class="pre">test_linearity_correction()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent" title="stvalidate.test_pipeline.TestLinearityStep.test_linearity_median_residuals_rms_lt_1percent"><code class="xref py py-meth docutils literal"><span class="pre">test_linearity_median_residuals_rms_lt_1percent()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent" title="stvalidate.test_pipeline.TestLinearityStep.test_linearity_99percent_of_residuals_rms_lt1percent"><code class="xref py py-meth docutils literal"><span class="pre">test_linearity_99percent_of_residuals_rms_lt1percent()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation" title="stvalidate.test_pipeline.TestLinearityStep.test_linearity_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_linearity_pixeldq_propagation()</span></code></a></div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Dark Current</td>
-<td><div class="first last line-block">
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation" title="stvalidate.test_pipeline.TestDarkCurrentStep.test_dark_current_pixeldq_propagation"><code class="xref py py-meth docutils literal"><span class="pre">test_dark_current_pixeldq_propagation()</span></code></a></div>
-<div class="line"><a class="reference internal" href="test.html#stvalidate.test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction" title="stvalidate.test_pipeline.TestDarkCurrentStep.test_dark_current_subtraction"><code class="xref py py-meth docutils literal"><span class="pre">test_dark_current_subtraction()</span></code></a></div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Jump Detection</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Ramp Fitting</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils" id="id2">
-<caption><span class="caption-text">Pipeline and Tests for CALIMAGE2</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
-<colgroup>
-<col width="23%" />
-<col width="77%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Pipeline Step</th>
-<th class="head">Test Name</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>Assign WCS</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Background Subtraction</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Telescope Emission</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Flat-Field Correction</td>
-<td><div class="first last line-block">
-<div class="line"><code class="xref py py-meth docutils literal"><span class="pre">test_flat_field_correction()</span></code></div>
-<div class="line"><code class="xref py py-meth docutils literal"><span class="pre">test_field_dq()</span></code></div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Flux Calibration</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Rectify 2D Image</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils" id="id3">
-<caption><span class="caption-text">Pipeline and Tests for CALSPEC2</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
-<colgroup>
-<col width="23%" />
-<col width="77%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Pipeline Step</th>
-<th class="head">Test Name</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>Assign WCS</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Background Subtraction</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Imprint Subtraction</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>MSA Failed-Open Flagging</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Subwindow Extraction</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Flat-Field Correction</td>
-<td><div class="first last line-block">
-<div class="line"><code class="xref py py-meth docutils literal"><span class="pre">test_flat_field_correction()</span></code></div>
-<div class="line"><code class="xref py py-meth docutils literal"><span class="pre">test_field_dq()</span></code></div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Stray-Light Subtraction</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Fringing Removal</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-even"><td>Path-Loss Correction</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td>Flux Calibration</td>
-<td><div class="first last line-block">
-<div class="line">No tests implemented</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
+  <div class="section" id="welcome-to-jwst-testing-s-documentation">
+<h1>Welcome to JWST Testing&#8217;s documentation!<a class="headerlink" href="#welcome-to-jwst-testing-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#configuration-files">Configuration Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#output">Output</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="test.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Guide</a></li>
 </ul>
 </div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
 </div>
 
 
@@ -377,7 +154,7 @@ of the pipeline.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="developer.html" class="btn btn-neutral float-right" title="Developer Guide" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -387,7 +164,7 @@ of the pipeline.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Matthew Hill, Jesse Averbuhk.
+        &copy; Copyright 2017, Matthew Hill.
 
     </p>
   </div>
