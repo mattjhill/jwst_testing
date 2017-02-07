@@ -14,8 +14,13 @@ def pytest_addoption(parser):
     parser.addoption("--gen_report", action="store_true",
         help="generate a report or not")
     
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def config(request):
     config = ConfigParser.ConfigParser()
-    config.read(request.config.getoption("--config_file"))
+    try:
+        config.read(request.config.getoption("--config_file"))
+    except:
+        # skip tests that use the config file if one isn't specified
+        pytest.skip("Must supply pipeline I/O with a config file.")
+
     return config
