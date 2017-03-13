@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Usage &mdash; ST_Validate 0.1 documentation</title>
+  <title>Usage &mdash; JWST Testing 0.1 documentation</title>
   
 
   
@@ -30,9 +30,9 @@
   
 
   
-    <link rel="top" title="ST_Validate 0.1 documentation" href="index.html"/>
-        <link rel="next" title="Tests" href="test.html"/>
-        <link rel="prev" title="Introduction" href="intro.html"/> 
+    <link rel="top" title="JWST Testing 0.1 documentation" href="index.html"/>
+        <link rel="next" title="Developer Guide" href="developer.html"/>
+        <link rel="prev" title="Welcome to JWST Testing’s documentation!" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -50,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> ST_Validate
+            <a href="index.html" class="icon icon-home"> JWST Testing
           
 
           
@@ -82,14 +82,8 @@
             
             
                 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#configuration-files">Configuration Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#output">Output</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="test.html">Tests</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer Guide</a></li>
 </ul>
 
             
@@ -103,7 +97,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">ST_Validate</a>
+        <a href="index.html">JWST Testing</a>
       </nav>
 
 
@@ -136,62 +130,47 @@
             
   <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>The test suite can be obtained by cloning the repository on GitHub <a class="reference external" href="https://github.com/javerbukh/ST_Validate">here</a>.</p>
-<p>You can then install the tool with</p>
-<div class="code highlight-default"><div class="highlight"><pre><span></span>$ python setup.py install
+<p>The test suite can be run from within the <code class="docutils literal"><span class="pre">jwst_testing/</span></code> directory with a configuration as follows</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span>$ py.test -v --config_file /path/to/my_config.cfg
 </pre></div>
 </div>
-<p><code class="code docutils literal"><span class="pre">stvalidate</span></code> can be run from the command line with</p>
-<div class="code highlight-default"><div class="highlight"><pre><span></span>$ stvalidate /path/to/my_config.cfg
-</pre></div>
-</div>
-</div>
-<div class="section" id="configuration-files">
-<h2>Configuration Files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
-<p>All of the options for running the test suite are set via a configuration file (my_config.cfg in the above command).
-For example, let&#8217;s say you have some MIRI data in the directory <code class="code docutils literal"><span class="pre">/mydata/miri</span></code> which you have run through some of
-the steps in the calibration pipeline.  In the configuration file you would set the appropriate values to the path
-of the input and output files from that step, so in the dq_init section <code class="code docutils literal"><span class="pre">input_file</span></code> is the input of the dq_init step of the pipeline and <code class="code docutils literal"><span class="pre">output_file</span></code> is output after running the dq_init step.  If you skipped
-some steps or don&#8217;t want to test the output just remove the section associated with that step and the tests will be skipped
-automatically.</p>
-<p>You can also specify which tests to run or skip via the <code class="code docutils literal"><span class="pre">tests</span></code> option.  The example below (<code class="code docutils literal"><span class="pre">tests</span> <span class="pre">=</span> <span class="pre">pixeldq</span></code>)
-would select only tests which contain &#8220;pixeldq&#8221; in their name.  You can use any boolean expression to choose tests. For
-example &#8220;pixeldq and not linearity&#8221; would choose all tests which contain &#8220;pixeldq&#8221; in their name unless they also contain
-&#8220;linearity&#8221;. The full list of tests and their descriptions can be found in the <a class="reference internal" href="test.html"><span class="doc">Tests</span></a> section.</p>
-<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">dq_init</span><span class="p">]</span>
-<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_uncal</span><span class="o">.</span><span class="n">fits</span>
-<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_dq</span><span class="o">.</span><span class="n">fits</span>
-<span class="p">[</span><span class="n">saturation</span><span class="p">]</span>
-<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_dq</span><span class="o">.</span><span class="n">fits</span>
-<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_sat</span><span class="o">.</span><span class="n">fits</span>
-<span class="p">[</span><span class="n">refpix</span><span class="p">]</span>
-<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_sat</span><span class="o">.</span><span class="n">fits</span>
-<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_refpix</span><span class="o">.</span><span class="n">fits</span>
-<span class="p">[</span><span class="n">reset</span><span class="p">]</span>
-<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_refpix</span><span class="o">.</span><span class="n">fits</span>
-<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_reset</span><span class="o">.</span><span class="n">fits</span>
-<span class="p">[</span><span class="n">lastframe</span><span class="p">]</span>
-<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_reset</span><span class="o">.</span><span class="n">fits</span>
-<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_lastframe</span><span class="o">.</span><span class="n">fits</span>
-<span class="p">[</span><span class="n">linearity</span><span class="p">]</span>
-<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_lastframe</span><span class="o">.</span><span class="n">fits</span>
-<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_lin</span><span class="o">.</span><span class="n">fits</span>
-<span class="p">[</span><span class="n">dark_current</span><span class="p">]</span>
-<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_lin</span><span class="o">.</span><span class="n">fits</span>
-<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">mydata</span><span class="o">/</span><span class="n">miri</span><span class="o">/</span><span class="n">jw06161001001_01101_00002_MIRIMAGE_dark_current</span><span class="o">.</span><span class="n">fits</span>
+<p>The configuration file should have sections corresponding to the step name with input and ouptut products for each step.
+For example</p>
+<div class="code highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Config file used to specify which tests will be run and which</span>
+<span class="c1"># files will be used for each of those tests.</span>
 
-<span class="p">[</span><span class="n">options</span><span class="p">]</span>
-<span class="c1"># run tests which contain &#39;pixeldq_propagation&#39; in their name</span>
-<span class="n">tests</span> <span class="o">=</span> <span class="n">pixeldq_propagation</span>
+<span class="c1"># [step_name]</span>
+<span class="c1"># input_file = path to input for that step</span>
+<span class="c1"># output_file = path to output for that step</span>
+
+<span class="p">[</span><span class="n">dq_init</span><span class="p">]</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_uncal</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_dq</span><span class="o">.</span><span class="n">fits</span>
+
+<span class="p">[</span><span class="n">saturation</span><span class="p">]</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_dq</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_sat</span><span class="o">.</span><span class="n">fits</span>
+
+<span class="p">[</span><span class="n">refpix</span><span class="p">]</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_sat</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_refpix</span><span class="o">.</span><span class="n">fits</span>
+
+<span class="p">[</span><span class="n">reset</span><span class="p">]</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_refpix</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_reset</span><span class="o">.</span><span class="n">fits</span>
+
+<span class="p">[</span><span class="n">lastframe</span><span class="p">]</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_reset</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_lastframe</span><span class="o">.</span><span class="n">fits</span>
+
+<span class="p">[</span><span class="n">linearity</span><span class="p">]</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_lastframe</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_lin</span><span class="o">.</span><span class="n">fits</span>
+
+<span class="p">[</span><span class="n">dark_current</span><span class="p">]</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_lin</span><span class="o">.</span><span class="n">fits</span>
+<span class="n">output_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">data_dark_current</span><span class="o">.</span><span class="n">fits</span>
 </pre></div>
-</div>
-</div>
-<div class="section" id="output">
-<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
-<p>Terminal output is generated by py.test.  You will see a list of the tests as well as whether they PASSED/FAILED/SKIPPED/ERROR.  Example output shown below</p>
-<img alt="_images/output.png" src="_images/output.png" />
 </div>
 </div>
 
@@ -202,10 +181,10 @@ example &#8220;pixeldq and not linearity&#8221; would choose all tests which con
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="test.html" class="btn btn-neutral float-right" title="Tests" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="developer.html" class="btn btn-neutral float-right" title="Developer Guide" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="intro.html" class="btn btn-neutral" title="Introduction" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Welcome to JWST Testing’s documentation!" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -214,7 +193,7 @@ example &#8220;pixeldq and not linearity&#8221; would choose all tests which con
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Matthew Hill, Jesse Averbuhk.
+        &copy; Copyright 2017, Matthew Hill.
 
     </p>
   </div>

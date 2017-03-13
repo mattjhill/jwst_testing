@@ -30,9 +30,6 @@
   
 
   
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="JWST Testing 0.1 documentation" href="index.html"/>
         <link rel="prev" title="Welcome to JWST Testing’s documentation!" href="index.html"/> 
 
@@ -119,7 +116,7 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/developer.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/developer.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -198,10 +195,15 @@ The package structure is as follows</p>
     <span class="n">parser</span><span class="o">.</span><span class="n">addoption</span><span class="p">(</span><span class="s2">&quot;--gen_report&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;generate a report or not&quot;</span><span class="p">)</span>
     
-<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">autouse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">config</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getoption</span><span class="p">(</span><span class="s2">&quot;--config_file&quot;</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getoption</span><span class="p">(</span><span class="s2">&quot;--config_file&quot;</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="c1"># skip tests that use the config file if one isn&#39;t specified</span>
+        <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;Must supply pipeline I/O with a config file.&quot;</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">config</span>
 </pre></div>
 </div>
