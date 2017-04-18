@@ -1,61 +1,55 @@
 """
 py.test module for unit testing the dq_init step.
 """
+from .. import core_utils
 
-from . import dq_init_utils
-
-import os
-import ConfigParser
-
-from astropy.io import fits
 import pytest
+from jwst.dq_init import DQInitStep
+from jwst.datamodels import MaskModel
+from astropy.io import fits
+import numpy as np
 
-# Set up the fixtures needed for all of the tests, i.e. open up all of the FITS files
+# Set up the fixtures needed for all of the tests
 
-@pytest.fixture(scope="module")
-def input_hdul(request, config):
-    if  config.has_option("dq_init", "input_file"):
-        curdir = os.getcwd()
-        config_dir = os.path.dirname(request.config.getoption("--config_file"))
-        os.chdir(config_dir)
-        hdul = fits.open(config.get("dq_init", "input_file"))
-        os.chdir(curdir)
-        return hdul
-    else:
-        pytest.skip("needs dq_init input_file")
+@pytest.fixture(scope='module')
+def mask_model(request):
+    ref_path = request.config.model.meta.ref_file.mask.name
+    ref_path = ref_path.replace('crds://', '/grp/crds/cache/references/jwst/')
+    return MaskModel(ref_path)
 
-@pytest.fixture(scope="module")
-def output_hdul(request, config):
-    if  config.has_option("dq_init", "output_file"):
-        curdir = os.getcwd()
-        config_dir = os.path.dirname(request.config.getoption("--config_file"))
-        os.chdir(config_dir)
-        hdul = fits.open(config.get("dq_init", "output_file"))
-        os.chdir(curdir)
-        return hdul
-    else:
-        pytest.skip("needs dq_init output_file")
-
-@pytest.fixture(scope="module")
-def reference_hdul(output_hdul, config):
-    CRDS = '/grp/crds/cache/references/jwst/'
-    ref_file = CRDS+output_hdul[0].header['R_MASK'][7:]
-    return fits.open(ref_file)
-
+@pytest.fixture(scope='module')
+def mask_hdul(request):
+    ref_path = request.config.model.meta.ref_file.mask.name
+    ref_path = ref_path.replace('crds://', '/grp/crds/cache/references/jwst/')
+    return fits.open(ref_path)
 
 # Unit Tests
 
-def test_pixeldq_ext_exists(output_hdul):
-    assert dq_init_utils.pixeldq_ext_exists(output_hdul)
+@pytest.mark.step
+def test_dq_init_step(request, input_model):
+    request.config.model = DQInitStep.call(input_model)
 
-def test_groupdq_vals_all_zero(output_hdul):
-    assert dq_init_utils.groupdq_vals_all_zero(output_hdul)
+def test_dq_flag_translation(mask_hdul, mask_model):
+    expected_dq = core_utils.bitwise_propagate(mask_hdul)
+    assert np.all(expected_dq == mask_model.dq)
 
-def test_err_ext_exists(output_hdul):
-    assert dq_init_utils.err_ext_exists(output_hdul)
+def test_pixeldq_propagation(output_model, mask_model):
+    if mask_model.meta.subarray.name == 'GENERIC':
+        xsize = output_model.meta.subarray.xsize
+        xstart = output_model.meta.subarray.xstart
+        ysize = output_model.meta.subarray.ysize
+        ystart = output_model.meta.subarray.ystart
+        submask = mask_model.dq[ystart - 1:ysize + ystart - 1, xstart - 1:xstart + xsize - 1]
+    else:
+        submask = mask_model.dq
 
-def test_err_vals_all_zero(output_hdul):
-    assert dq_init_utils.err_vals_all_zero(output_hdul)
+    assert np.all(submask == output_model.pixeldq)
 
-def test_pixeldq_propagation(output_hdul, reference_hdul):
-    assert dq_init_utils.pixeldq_propagation(output_hdul, reference_hdul)
+def test_groupdq_initialization(output_model):
+    assert np.all(output_model.groupdq == 0)
+
+def test_err_initialization(output_model):
+    assert np.all(output_model.err == 0)
+
+def test_dq_def_initialization(output_model):
+    assert hasattr(output_model, 'dq_def')

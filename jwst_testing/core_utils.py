@@ -44,15 +44,18 @@ def get_pixeldq_bit(name):
     else:
         return 'N/A'
 
-def bitwise_propagate(refhdu, pixeldq):
-    for row in refhdu['DQ_DEF'].data:
+def bitwise_propagate(ref_hdul):
+
+    dq = ref_hdul['DQ'].data.astype(np.uint32)
+    expected_dq = np.zeros_like(dq)
+    for row in ref_hdul['DQ_DEF'].data:
         try:
             # find which pixels have the bit set
-            flagged = (np.bitwise_and(1, np.right_shift(refhdu['DQ'].data.astype(np.uint32), row['BIT'])))
+            flagged = (np.bitwise_and(1, np.right_shift(dq, row['BIT'])))
             # shift them to the correct bit for PIXELDQ
             flagged = np.left_shift(flagged, dq_dict[row['NAME']])
             # propagate into the PIXELDQ extension
-            pixeldq = np.bitwise_or(pixeldq, flagged)
+            expected_dq = np.bitwise_or(expected_dq, flagged)
         except KeyError:
             print("No DQ mnemonic "+row['NAME'])
-    return pixeldq
+    return expected_dq
