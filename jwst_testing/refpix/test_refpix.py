@@ -4,43 +4,36 @@ py.test module for unit testing the refpix step.
 
 from . import refpix_utils
 
-import os
-import ConfigParser
 
-from astropy.io import fits
 import pytest
+from jwst.refpix import RefPixStep
+from jwst.datamodels import SuperBiasModel
+from astropy.io import fits
+import numpy as np
 
-# Set up the fixtures needed for all of the tests, i.e. open up all of the FITS files
+# Set up the fixtures needed for all of the tests
 
-@pytest.fixture(scope="module")
-def input_hdul(request, config):
-    if  config.has_option("refpix", "input_file"):
-        curdir = os.getcwd()
-        config_dir = os.path.dirname(request.config.getoption("--config_file"))
-        os.chdir(config_dir)
-        hdul = fits.open(config.get("refpix", "input_file"))
-        os.chdir(curdir)
-        return hdul
+@pytest.fixture(scope='module')
+def superbias_model(request):
+    ref_path = request.config.model.meta.ref_file.refpix.name
+    if ref_path:
+        ref_path = ref_path.replace('crds://', '/grp/crds/cache/references/jwst/')
+        return SuperBiasModel(ref_path)
     else:
-        pytest.skip("needs refpix input_file")
+        return None
 
-@pytest.fixture(scope="module")
-def output_hdul(request, config):
-    if  config.has_option("refpix", "output_file"):
-        curdir = os.getcwd()
-        config_dir = os.path.dirname(request.config.getoption("--config_file"))
-        os.chdir(config_dir)
-        hdul = fits.open(config.get("refpix", "output_file"))
-        os.chdir(curdir)
-        return hdul
+
+@pytest.fixture(scope='module')
+def superbias_hdul(request):
+    ref_path = request.config.model.meta.ref_file.refpix.name
+    if ref_path:
+        ref_path = ref_path.replace('crds://', '/grp/crds/cache/references/jwst/')
+        return fits.open(ref_path)
     else:
-        pytest.skip("needs refpix output_file")
-
-@pytest.fixture(scope="module")
-def reference_hdul(output_hdul, config):
-    CRDS = '/grp/crds/cache/references/jwst/'
-    ref_file = CRDS+output_hdul[0].header['R_BIAS'][7:]
-    return fits.open(ref_file)
+        return None
 
 # Unit Tests
 
+@pytest.mark.step
+def test_refpix_step(request, input_model):
+    request.config.model = RefPixStep.call(input_model)
