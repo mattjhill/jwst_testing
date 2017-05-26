@@ -1,18 +1,18 @@
 from setuptools import setup, find_packages
 
-try:
-    import relic.release
-except ImportError:
-    print('This package requires RELIC ("Release I Control"):')
-    print('  pip install relic')
-    exit(1)
+# try:
+#     import relic.release
+# except ImportError:
+#     print('This package requires RELIC ("Release I Control"):')
+#     print('  pip install relic')
+#     exit(1)
 
-version = relic.release.get_info()
-relic.release.write_template(version, 'jwst_testing')
+# version = relic.release.get_info()
+# relic.release.write_template(version, 'jwst_testing')
 
 setup(
     name = "jwst_testing",
-    version=version.pep386,
+    version='0.0',
     packages = find_packages(),
     entry_points = {
         'console_scripts' : [
@@ -20,6 +20,6 @@ setup(
             'test_jwst_batch = jwst_testing.runners:run_tests_batch'
         ]
     },
-    install_requires = ['relic', 'pytest-html'],
+    install_requires = ['pytest-html'],
     zip_safe = False,
     )

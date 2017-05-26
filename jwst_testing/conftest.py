@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import pytest
 from datetime import datetime
 from py.xml import html
@@ -5,6 +7,7 @@ from py.xml import html
 import jwst
 from jwst import datamodels
 import crds
+from astropy.io import fits
 
 ############# Fixtures ##################
 
@@ -37,9 +40,37 @@ def output_model(request):
 def pytest_addoption(parser):
     parser.addoption('--uncal', action='store', help='the uncalibrated level 1B file')
 
+def get_keyword(header, keyword):
+    if keyword in header:
+        return header[keyword]
+    else:
+        return ''
+
 def pytest_configure(config):
     config._metadata['jwst'] = jwst.__version__
     config._metadata['crds_context'] = crds.heavy_client.get_processing_mode('jwst')[1]
+
+    header = fits.getheader(config.getoption('uncal'))
+    config._modelmeta = OrderedDict()
+    config._modelmeta['meta.observation.template'] = get_keyword(header, 'TEMPLATE')
+    config._modelmeta['meta.instrument.name'] = get_keyword(header, 'INSTRUME')
+    config._modelmeta['meta.instrument.detector'] = get_keyword(header, 'DETECTOR')
+    config._modelmeta['meta.instrument.filter'] = get_keyword(header, 'FILTER')
+    config._modelmeta['meta.instrument.pupil'] = get_keyword(header, 'PUPIL')
+    config._modelmeta['meta.instrument.grating'] = get_keyword(header, 'GRATING')
+    config._modelmeta['meta.instrument.channel'] = get_keyword(header, 'CHANNEL')
+    config._modelmeta['meta.instrument.band'] = get_keyword(header, 'BAND')
+
+    config._modelmeta['meta.exposure.type'] = get_keyword(header, 'EXP_TYPE')
+    config._modelmeta['meta.exposure.readpatt'] = get_keyword(header, 'READPATT')
+    config._modelmeta['meta.exposure.nints'] = get_keyword(header, 'NINTS')
+    config._modelmeta['meta.exposure.ngroups'] = get_keyword(header, 'NGROUPS')
+
+    config._modelmeta['meta.subarray.name'] = get_keyword(header, 'SUBARRAY')
+    config._modelmeta['meta.subarray.xstart'] = get_keyword(header, 'SUBSTRT1')
+    config._modelmeta['meta.subarray.xsize'] = get_keyword(header, 'SUBSIZE1')
+    config._modelmeta['meta.subarray.ystart'] = get_keyword(header, 'SUBSTRT2')
+    config._modelmeta['meta.subarray.ysize'] = get_keyword(header, 'SUBSIZE2')
 
 
 def pytest_runtest_setup(item):

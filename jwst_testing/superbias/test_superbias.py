@@ -26,6 +26,6 @@ def superbias_hdul(request):
 # Unit Tests
 
 @pytest.mark.step
-def test_dq_init_step(request, input_model):
+def test_superbias_step(request, input_model):
     request.config.model = SuperBiasStep.call(input_model)
 
