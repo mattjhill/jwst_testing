@@ -1,12 +1,13 @@
 """
-py.test module for unit testing the rscd step.
+py.test module for unit testing the linearity step.
 """
 
-from . import rscd_utils
+from jwst_testing.linearity import linearity_utils
+
 
 import pytest
-from jwst.rscd import RSCD_Step
-from jwst.datamodels import RSCDModel
+from jwst.linearity import LinearityStep
+from jwst.datamodels import LinearityModel
 from astropy.io import fits
 import numpy as np
 
@@ -14,19 +15,18 @@ import numpy as np
 
 @pytest.fixture(scope='module')
 def superbias_model(request):
-    ref_path = request.config.model.meta.ref_file.rscd.name
+    ref_path = request.config.model.meta.ref_file.linearity.name
     ref_path = ref_path.replace('crds://', '/grp/crds/cache/references/jwst/')
-    return RSCDModel(ref_path)
+    return LinearityModel(ref_path)
 
 @pytest.fixture(scope='module')
 def superbias_hdul(request):
-    ref_path = request.config.model.meta.ref_file.rscd.name
+    ref_path = request.config.model.meta.ref_file.linearity.name
     ref_path = ref_path.replace('crds://', '/grp/crds/cache/references/jwst/')
     return fits.open(ref_path)
 
 # Unit Tests
 
 @pytest.mark.step
-def test_rscd_step(request, input_model):
-    request.config.model = RSCD_Step.call(input_model)
-
+def test_linearity_step(request, input_model):
+    request.config.model = LinearityStep.call(input_model)

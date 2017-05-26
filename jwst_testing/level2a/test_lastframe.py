@@ -2,7 +2,7 @@
 py.test module for unit testing the lastframe step.
 """
 
-from . import lastframe_utils
+from jwst_testing.lastframe import lastframe_utils
 
 import pytest
 from jwst.lastframe import LastFrameStep

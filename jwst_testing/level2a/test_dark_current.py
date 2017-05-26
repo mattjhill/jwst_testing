@@ -1,11 +1,35 @@
 """
-This file contains the functions which will be used to test the dark_current step
-of the JWST Calibration Pipeline
+py.test module for unit testing the dark_current step.
 """
 
-from .. import core_utils
-
+import pytest
+from jwst.dark_current import DarkCurrentStep
+from jwst.datamodels import DarkModel, DarkMIRIModel
+from astropy.io import fits
 import numpy as np
+
+# Set up the fixtures needed for all of the tests
+
+@pytest.fixture(scope='module')
+def dark_model(request):
+    ref_path = request.config.model.meta.ref_file.dark.name
+    ref_path = ref_path.replace('crds://', '/grp/crds/cache/references/jwst/')
+    if request.config.model.meta.instrument.name == 'MIRI':
+        return DarkMIRIModel(ref_path)
+    else:
+        return DarkModel(ref_path)
+
+@pytest.fixture(scope='module')
+def dark_hdul(request):
+    ref_path = request.config.model.meta.ref_file.dark.name
+    ref_path = ref_path.replace('crds://', '/grp/crds/cache/references/jwst/')
+    return fits.open(ref_path)
+
+# Unit Tests
+
+@pytest.mark.step
+def test_dark_current_step(request, input_model):
+    request.config.model = DarkCurrentStep.call(input_model)
 
 def dark_current_subtraction(output_hdul, reference_hdul, input_hdul):
     """
@@ -25,7 +49,7 @@ def dark_current_subtraction(output_hdul, reference_hdul, input_hdul):
     nints, ngroups, nx, ny = output_hdul['SCI'].shape
     nframes_tot = (nframes+groupgap)*ngroups
     if nframes_tot > reference_hdul['SCI'].data.shape[0]:
-        # data should remain unchanged if there are more frames in the 
+        # data should remain unchanged if there are more frames in the
         # science data than the reference file
         result = np.all(input_hdul['SCI'].data == output_hdul['SCI'].data)
         return result

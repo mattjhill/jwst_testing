@@ -1,13 +1,10 @@
 """
-py.test module for unit testing the linearity step.
+py.test module for unit testing the dq_init step.
 """
 
-from . import linearity_utils
-
-
 import pytest
-from jwst.linearity import LinearityStep
-from jwst.datamodels import LinearityModel
+from jwst.superbias import SuperBiasStep
+from jwst.datamodels import SuperBiasModel
 from astropy.io import fits
 import numpy as np
 
@@ -15,18 +12,19 @@ import numpy as np
 
 @pytest.fixture(scope='module')
 def superbias_model(request):
-    ref_path = request.config.model.meta.ref_file.linearity.name
+    ref_path = request.config.model.meta.ref_file.superbias.name
     ref_path = ref_path.replace('crds://', '/grp/crds/cache/references/jwst/')
-    return LinearityModel(ref_path)
+    return SuperBiasModel(ref_path)
 
 @pytest.fixture(scope='module')
 def superbias_hdul(request):
-    ref_path = request.config.model.meta.ref_file.linearity.name
+    ref_path = request.config.model.meta.ref_file.superbias.name
     ref_path = ref_path.replace('crds://', '/grp/crds/cache/references/jwst/')
     return fits.open(ref_path)
 
 # Unit Tests
 
 @pytest.mark.step
-def test_linearity_step(request, input_model):
-    request.config.model = LinearityStep.call(input_model)
+def test_superbias_step(request, input_model):
+    request.config.model = SuperBiasStep.call(input_model)
+

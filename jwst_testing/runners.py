@@ -127,15 +127,17 @@ def run_pytest(filename, steps_only=True):
 
     pytest_args = ['-v']
     header = fits.getheader(filename)
-    steps = collect_2A_steps(header)
+    steps_2A = collect_2A_steps(header)
 
-    # if header['EXP_TYPE'] in image2:
-    #     steps += collect_image2B_steps(header)
-    # if header['EXP_TYPE'] in spec2:
-    #     steps += collect_spec2B_steps(header)
+    if header['EXP_TYPE'] in image2:
+        steps += collect_image2B_steps(header)
+    if header['EXP_TYPE'] in spec2:
+        steps += collect_spec2B_steps(header)
 
-    test_files = [os.path.join(os.path.dirname(__file__), step, 'test_' + step + '.py') for step in steps]
-    pytest_args += test_files
+    test_files_2A = [os.path.join(os.path.dirname(__file__), 'level2a', 'test_' + step + '.py') for step in steps_2A]
+    test_files_2B = [os.path.join(os.path.dirname(__file__), 'level2b', 'test_' + step + '.py')]
+    pytest_args += test_files_2A
+    pytest_args += test_files_2B
     pytest_args += ['--uncal', filename, '--html',
                     filename.split('/')[-1].replace('fits', 'html'),
                     '--self-contained-html']

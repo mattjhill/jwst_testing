@@ -1,7 +1,7 @@
 """
 py.test module for unit testing the dq_init step.
 """
-from .. import core_utils
+from jwst_testing import core_utils
 
 import pytest
 from jwst.dq_init import DQInitStep

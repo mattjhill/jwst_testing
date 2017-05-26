@@ -2,9 +2,6 @@
 py.test module for unit testing the refpix step.
 """
 
-from . import refpix_utils
-
-
 import pytest
 from jwst.refpix import RefPixStep
 from jwst.datamodels import SuperBiasModel

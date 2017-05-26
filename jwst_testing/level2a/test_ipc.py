@@ -2,7 +2,7 @@
 py.test module for unit testing the ipc step.
 """
 
-from . import ipc_utils
+from jwst_testing.ipc import ipc_utils
 
 import os
 import ConfigParser
